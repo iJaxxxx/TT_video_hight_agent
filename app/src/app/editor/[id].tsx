@@ -1,8 +1,8 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useEvent, useEventListener } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { ChevronLeft, ChevronRight, Minus, Play, Plus, Trash2 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button, MonoText, Screen, TopBar } from '../../components/ui';
@@ -17,27 +17,46 @@ const MIN_LEN = 1;
 
 const CLIP_TONES = ['#39252e', '#25252a', '#49303b', '#2e2a33'];
 
-/** 当前片段的预览：服务端按回合切好的 720p 预览，从裁剪后的开头播起 */
-function ClipPlayer({ url, offset: clipOffset, label, total }: { url: string; offset: number; label: string; total: string }) {
-  // 本地任务播的是原视频，起点要加上回合在原视频里的位置
+/**
+ * 当前片段的预览：只播这个片段（编辑后的开头到结尾），播完停在开头。
+ * 服务端播的是按回合切好的 720p 预览；本地任务播的是整段原视频，起点要加上回合在原视频里的位置。
+ */
+function ClipPlayer({ url, offset: clipOffset, length, label, total }: { url: string; offset: number; length: number; label: string; total: string }) {
   const { uri, offset: base } = splitPreviewUrl(url);
-  const offset = base + clipOffset;
+  const from = Math.max(0, base + clipOffset);
+  const to = base + clipOffset + length;
   const player = useVideoPlayer(uri, (p) => {
-    p.loop = !base;
-    p.currentTime = Math.max(0, offset);
+    p.timeUpdateEventInterval = 0.1;
+    p.currentTime = from;
   });
   const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
   useEffect(() => {
-    player.currentTime = Math.max(0, offset);
-  }, [player, offset]);
-  // 本地任务播的是整段原视频，加载完再跳一次到片段起点
+    player.currentTime = from;
+  }, [player, from]);
+  // 加载前设置的 currentTime 可能不生效，可以播放时再跳一次
   useEventListener(player, 'statusChange', ({ status }) => {
-    if (status === 'readyToPlay' && base) player.currentTime = Math.max(0, offset);
+    if (status === 'readyToPlay') player.currentTime = from;
   });
+  // 到片段结尾就停，回到开头等下一次播放
+  useEventListener(player, 'timeUpdate', ({ currentTime }) => {
+    if (currentTime >= to) {
+      player.pause();
+      player.currentTime = from;
+    }
+  });
+  // 离开编辑页（比如点「下一步」进导出页，这一页还留在栈里）时停止播放
+  useFocusEffect(
+    useCallback(() => () => player.pause(), [player]),
+  );
+  const toggle = () => {
+    if (isPlaying) return player.pause();
+    if (player.currentTime < from || player.currentTime >= to - 0.05) player.currentTime = from;
+    player.play();
+  };
   return (
     <Pressable
       style={styles.preview}
-      onPress={() => (isPlaying ? player.pause() : player.play())}
+      onPress={toggle}
       accessibilityRole="button"
       accessibilityLabel={isPlaying ? '暂停预览' : '播放预览'}
     >
@@ -124,6 +143,7 @@ export default function EditorScreen() {
             key={clip.n}
             url={api.previewUrl(serverUrl, id, clip.n)}
             offset={cand ? clip.start - cand.start : 0}
+            length={clip.end - clip.start}
             label={`第 ${clip.n + 1} 回合`}
             total={`${fmtClock(clip.end - clip.start)} / ${fmtClock(total)}`}
           />

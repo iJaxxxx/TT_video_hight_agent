@@ -7,15 +7,23 @@ import { splitPreviewUrl } from '../lib/api';
 
 /** 单个候选分的 720p 预览。服务端第一次请求时才剪，可能要等一两秒。本地任务直接从原视频的回合起点播 */
 function Player({ url }: { url: string }) {
-  const { uri, offset } = splitPreviewUrl(url);
+  const { uri, offset, end } = splitPreviewUrl(url);
   const player = useVideoPlayer(uri, (p) => {
-    p.loop = !offset;
+    p.loop = end === undefined;
+    p.timeUpdateEventInterval = 0.1;
     if (offset) p.currentTime = offset;
     p.play();
   });
   // 加载前设置的 currentTime 可能不生效，可以播放时再跳一次
   useEventListener(player, 'statusChange', ({ status }) => {
     if (status === 'readyToPlay' && offset && player.currentTime < offset - 0.5) player.currentTime = offset;
+  });
+  // 本地任务播的是整段原视频：到回合结尾就停，回到回合开头
+  useEventListener(player, 'timeUpdate', ({ currentTime }) => {
+    if (end !== undefined && currentTime >= end) {
+      player.pause();
+      player.currentTime = offset;
+    }
   });
   return <VideoView player={player} style={styles.video} nativeControls contentFit="contain" />;
 }

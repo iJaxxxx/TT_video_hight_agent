@@ -11,12 +11,21 @@ import { localTimings } from '../../lib/local/jobs';
 import { useSettings } from '../../lib/settings';
 import { colors as c } from '../../lib/theme';
 
-const RATIOS: ExportRatio[] = ['9:16', '16:9', '1:1'];
-const PREVIEW_SIZE: Record<ExportRatio, { width: number; height: number; marginV: number }> = {
-  '9:16': { width: 180, height: 285, marginV: 12 },
-  '16:9': { width: 310, height: 174, marginV: 68 },
-  '1:1': { width: 244, height: 244, marginV: 33 },
-};
+/** null = 原比例，不裁切（默认） */
+const RATIOS: { value: ExportRatio | null; label: string }[] = [
+  { value: null, label: '原比例' },
+  { value: '9:16', label: '9:16' },
+  { value: '16:9', label: '16:9' },
+  { value: '1:1', label: '1:1' },
+];
+const RATIO_ASPECT: Record<ExportRatio, number> = { '9:16': 9 / 16, '16:9': 16 / 9, '1:1': 1 };
+
+/** 预览框：按宽高比放进 310×285 的区域，上下留白补齐，切换比例时下面的选项不跳动 */
+function previewSize(aspect: number) {
+  const width = Math.round(Math.min(310, 285 * aspect));
+  const height = Math.round(width / aspect);
+  return { width, height, marginV: Math.round((309 - height) / 2) };
+}
 const QUALITIES: { value: ExportQuality; label: string; hint: string }[] = [
   { value: '720p', label: '720p', hint: '短边最多 720，文件更小' },
   { value: '1080p', label: '1080p', hint: '推荐 · 短边最多 1080，不放大' },
@@ -38,7 +47,9 @@ export default function ExportScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { serverUrl } = useSettings();
   const { clips } = useDraft(id);
-  const [ratio, setRatio] = useState<ExportRatio>('9:16');
+  const [ratio, setRatio] = useState<ExportRatio | null>(null);
+  /** 原视频画面的宽高比，用于「原比例」的预览框。拿不到时按 16:9 */
+  const [sourceAspect, setSourceAspect] = useState(16 / 9);
   const [quality, setQuality] = useState<ExportQuality>('1080p');
   const [job, setJob] = useState<Job | null>(null);
   const [started, setStarted] = useState(false);
@@ -114,7 +125,15 @@ export default function ExportScreen() {
 
   const total = clipsDuration(clips);
   const first = clips[0];
-  const size = PREVIEW_SIZE[ratio];
+  const frameUri = first ? api.frameUrl(serverUrl, id, first.start + 1) : '';
+  // 服务端任务有 meta 宽高；本地任务没有，就看截图的尺寸（截图已按视频方向旋转好）
+  const metaW = job?.meta?.width ?? 0;
+  const metaH = job?.meta?.height ?? 0;
+  useEffect(() => {
+    if (metaW > 0 && metaH > 0) return setSourceAspect(metaW / metaH);
+    if (frameUri) Image.getSize(frameUri, (w, h) => w > 0 && h > 0 && setSourceAspect(w / h), () => {});
+  }, [metaW, metaH, frameUri]);
+  const size = previewSize(ratio ? RATIO_ASPECT[ratio] : sourceAspect);
 
   if (done && exp) {
     return (
@@ -130,7 +149,7 @@ export default function ExportScreen() {
               准备好，去分享。
             </H1>
             <Text style={styles.successText}>
-              {exp.clips} 个片段，时长 {fmtClock(exp.duration ?? total)}，{quality ?? '原画'} · {ratio}。
+              {exp.clips} 个片段，时长 {fmtClock(exp.duration ?? total)}，{quality ?? '原画'} · {ratio ?? '原比例'}。
               {saved ? '已保存到相册。' : ''}
             </Text>
             {job && localTimings(job)?.export !== undefined && (
@@ -158,7 +177,7 @@ export default function ExportScreen() {
 
         <View style={[styles.exportPreview, { width: size.width, height: size.height, marginVertical: size.marginV }]}>
           {first && (
-            <Image source={{ uri: api.frameUrl(serverUrl, id, first.start + 1) }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+            <Image source={{ uri: frameUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
           )}
           <View style={styles.previewTag}>
             <MonoText size={11}>
@@ -170,20 +189,23 @@ export default function ExportScreen() {
         <View style={styles.section}>
           <View style={styles.optionTitle}>
             <Text style={styles.h3}>画面比例</Text>
-            <Text style={{ color: '#737378', fontSize: 10 }}>居中裁切</Text>
+            <Text style={{ color: '#737378', fontSize: 10 }}>{ratio ? '居中裁切' : '不裁切'}</Text>
           </View>
           <View style={styles.segmented}>
-            {RATIOS.map((r) => (
-              <Pressable
-                key={r}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: ratio === r }}
-                onPress={() => setRatio(r)}
-                style={[styles.segment, ratio === r && { backgroundColor: '#303034' }]}
-              >
-                <Text style={{ color: ratio === r ? '#fff' : '#85858a', fontSize: 12, fontWeight: ratio === r ? '600' : '400' }}>{r}</Text>
-              </Pressable>
-            ))}
+            {RATIOS.map(({ value, label }) => {
+              const on = ratio === value;
+              return (
+                <Pressable
+                  key={label}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  onPress={() => setRatio(value)}
+                  style={[styles.segment, on && { backgroundColor: '#303034' }]}
+                >
+                  <Text style={{ color: on ? '#fff' : '#85858a', fontSize: 12, fontWeight: on ? '600' : '400' }}>{label}</Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 

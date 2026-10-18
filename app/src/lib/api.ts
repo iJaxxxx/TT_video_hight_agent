@@ -175,10 +175,14 @@ export const api = {
   clipUrl: (base: string, id: string) => (isLocalId(id) ? localApi.clipUrl(id) : server.clipUrl(base, id)),
 };
 
-/** 本地任务的预览直接播原视频，URL 带 #t=起点；服务端的预览是剪好的片段，起点为 0 */
-export function splitPreviewUrl(url: string): { uri: string; offset: number } {
-  const m = url.match(/^(.*)#t=([\d.]+)$/);
-  return m ? { uri: m[1], offset: Number(m[2]) } : { uri: url, offset: 0 };
+/**
+ * 本地任务的预览直接播原视频，URL 带 #t=起点,终点（媒体片段语法）；
+ * 服务端的预览是剪好的片段，起点为 0、没有终点。
+ */
+export function splitPreviewUrl(url: string): { uri: string; offset: number; end?: number } {
+  const m = url.match(/^(.*)#t=([\d.]+)(?:,([\d.]+))?$/);
+  if (!m) return { uri: url, offset: 0 };
+  return { uri: m[1], offset: Number(m[2]), end: m[3] === undefined ? undefined : Number(m[3]) };
 }
 
 export type PickedVideo = { uri: string; name: string; mimeType: string; webFile?: Blob };

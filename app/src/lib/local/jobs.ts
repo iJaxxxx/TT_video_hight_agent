@@ -385,11 +385,11 @@ export const localApi = {
     return (c && j.local.thumbs[c.n]) || '';
   },
 
-  /** 预览不剪片，直接播原视频：用 #t=起点 告诉播放器从哪开始（见 api.splitPreviewUrl） */
+  /** 预览不剪片，直接播原视频：用 #t=起点,终点 告诉播放器播哪一段（见 api.splitPreviewUrl） */
   previewUrl: (id: string, n: number) => {
     const j = jobs.get(id);
     const c = j?.candidates.find((x) => x.n === n);
-    return j && c ? `${j.local.videoUri}#t=${c.start}` : '';
+    return j && c ? `${j.local.videoUri}#t=${c.start},${c.end}` : '';
   },
 
   clipUrl: (id: string) => jobs.get(id)?.local.clipUri ?? '',
