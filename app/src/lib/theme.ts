@@ -1,62 +1,58 @@
-import { useColorScheme } from 'react-native';
+import { Platform } from 'react-native';
 
 import type { Winner } from './api';
 
-// 与技术方案页同一套颜色：球台蓝为主色，规则 / 小模型 / 大模型三层各一色
-const light = {
-  bg: '#f6f8fb',
-  surface: '#ffffff',
-  fg: '#16202e',
-  muted: '#5a6779',
-  line: '#d9e0ea',
-  primary: '#1d4f8c',
+// 与 Figma 设计稿同一套颜色：纯黑底、深灰卡片、蓝色强调色。App 只有深色一种外观
+const palette = {
+  bg: '#000000',
+  surface: '#151517',
+  surface2: '#1b1c20',
+  well: '#121214',
+  raised: '#252528',
+  fg: '#f5f5f7',
+  fg2: '#aaaab0',
+  muted: '#86868b',
+  faint: '#6e6e73',
+  line: 'rgba(255,255,255,0.07)',
+  accent: '#2997ff',
+  accentSoft: '#7cc0ff',
+  accentBg: 'rgba(41,151,255,0.13)',
+  onAccent: '#ffffff',
+  warm: '#1b1317',
+  warmThumb: '#332129',
+  court: '#6b4554',
+  danger: '#ff6961',
+  dangerBg: 'rgba(255,105,97,0.13)',
+  ball: '#ff9f0a',
+  ballBg: 'rgba(255,159,10,0.14)',
+  // 下面是旧组件（球台标定页）用到的名字，映射到新配色
+  primary: '#2997ff',
   onPrimary: '#ffffff',
-  ball: '#d9661f',
-  danger: '#c0392b',
-  t1: '#2f7a57',
-  t1bg: '#e6f2ec',
-  t2: '#2a5fae',
-  t2bg: '#e7eef9',
-  t3: '#b8561a',
-  t3bg: '#fbeee4',
-  chip: '#eef2f7',
+  chip: '#252528',
+  t1: '#30d158',
+  t1bg: 'rgba(48,209,88,0.14)',
+  t2: '#7cc0ff',
+  t2bg: 'rgba(41,151,255,0.13)',
+  t3: '#ff9f0a',
+  t3bg: 'rgba(255,159,10,0.14)',
 };
 
-const dark: typeof light = {
-  bg: '#0f141c',
-  surface: '#161d28',
-  fg: '#e3e8ef',
-  muted: '#98a4b5',
-  line: '#2a3442',
-  primary: '#7fa9e6',
-  onPrimary: '#0f141c',
-  ball: '#f09a5c',
-  danger: '#ef7d70',
-  t1: '#6cc79b',
-  t1bg: '#17291f',
-  t2: '#86aef0',
-  t2bg: '#18233a',
-  t3: '#f0a06a',
-  t3bg: '#2e1f14',
-  chip: '#1d2633',
-};
-
-export type Colors = typeof light;
+export type Colors = typeof palette;
+export const colors = palette;
 
 export function useColors(): Colors {
-  return useColorScheme() === 'dark' ? dark : light;
+  return palette;
 }
+
+export const mono = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'SFMono-Regular, Menlo, Consolas, monospace' });
 
 export function winnerColor(c: Colors, w: Winner): { fg: string; bg: string } {
   switch (w) {
     case 'me':
-      return { fg: c.t1, bg: c.t1bg };
+      return { fg: c.accentSoft, bg: c.accentBg };
     case 'coach':
-      return { fg: c.ball, bg: c.t3bg };
-    case 'practice':
-    case 'unclear':
-      return { fg: c.muted, bg: c.chip };
+      return { fg: c.fg2, bg: '#2b2c31' };
     default:
-      return { fg: c.primary, bg: c.t2bg };
+      return { fg: c.muted, bg: '#2b2c31' };
   }
 }

@@ -1,34 +1,453 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Check, ChevronRight, Clock3, Gauge, MoreHorizontal, Play, Sparkles, Trash2, Crosshair } from 'lucide-react-native';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CalibrationCard } from '../../components/CalibrationCard';
-import { CandidateCard } from '../../components/CandidateCard';
 import { PreviewModal } from '../../components/PreviewModal';
-import { SpeedSummary } from '../../components/SpeedSummary';
-import { Button, Card, ProgressBar } from '../../components/ui';
-import { api, ApiError, type Candidate, type Job, type Winner } from '../../lib/api';
+import { jobTitle } from '../../components/ProjectRow';
+import { Button, Eyebrow, H1, IconButton, MonoText, ProgressBar, Screen, Sheet, TopBar } from '../../components/ui';
+import { api, ApiError, CONFIDENCE_LABEL, fmtTime, WINNER_LABEL, type Candidate, type Job, type Winner } from '../../lib/api';
+import { clipsDuration, ensureDraft, fmtClock, toggleClip, useDraft } from '../../lib/draft';
 import { useSettings } from '../../lib/settings';
-import { useColors } from '../../lib/theme';
+import { colors as c, mono, winnerColor } from '../../lib/theme';
 
-type Filter = 'todo' | 'me' | 'all';
+type Filter = 'mine' | 'all' | 'opponent';
 const FILTERS: [Filter, string][] = [
-  ['todo', '待确认'],
-  ['me', '我赢'],
-  ['all', '全部'],
+  ['mine', '我的得分'],
+  ['all', '全部回合'],
+  ['opponent', '对手得分'],
 ];
 
-export default function JobScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { serverUrl } = useSettings();
-  const c = useColors();
+const BADGE: Record<Winner, string> = { me: '我的得分', coach: '对手得分', practice: '练习', unclear: '看不清', unknown: '待确认' };
+const CHOICES: Winner[] = ['me', 'coach', 'practice', 'unclear'];
+
+function llmLine(cand: Candidate): string {
+  const r = cand.llm;
+  switch (r.status) {
+    case 'skipped_no_key':
+      return '未配置大模型，请看预览后手动选择。';
+    case 'pending':
+      return '大模型复核中…';
+    case 'error':
+      return `大模型调用失败，请手动选择（${r.error.slice(0, 60)}）`;
+    case 'agreed':
+      return `AI 判断：${BADGE[r.winner]}（可信度 ${r.confidence ?? '-'}）${r.evidence ? `。${r.evidence}` : ''}`;
+    case 'disagreed':
+      return `AI 两次判断不一致（${r.votes.map((v) => BADGE[v]).join(' / ')}），请手动确认。`;
+  }
+}
+
+// ———————————————————— 分析中 ————————————————————
+
+function AnalysisView({ job, done, onShow }: { job: Job; done: boolean; onShow: () => void }) {
+  const pct = done ? 100 : Math.round(job.progress * 100);
+  const mine = job.candidates.filter((x) => x.winner === 'me').length;
+  return (
+    <Screen>
+      <ScrollView contentContainerStyle={styles.page} showsVerticalScrollIndicator={false}>
+        <TopBar title="AI 分析" muted onBack={() => router.replace('/')} />
+        <View style={styles.hero}>
+          <View style={styles.orbit}>
+            <Sparkles size={34} strokeWidth={1.5} color="#d9c7ce" />
+          </View>
+          <Eyebrow style={{ textAlign: 'center' }}>{done ? '分析完成' : '正在理解比赛'}</Eyebrow>
+          <H1 size={34} style={{ textAlign: 'center' }}>
+            {done ? '你的高光，准备好了。' : '精彩正在浮现。'}
+          </H1>
+          <Text style={styles.heroText}>AI 正在逐帧识别回合与得分，不需要停留在此页面。</Text>
+        </View>
+
+        <View style={styles.progressCard}>
+          <Text style={styles.pct}>
+            {pct}
+            <Text style={{ color: c.muted, fontSize: 15 }}>%</Text>
+          </Text>
+          <View style={{ marginTop: 14, marginBottom: 22 }}>
+            <ProgressBar value={pct / 100} />
+          </View>
+          <View style={{ gap: 16 }}>
+            {job.steps.map((s, i) => {
+              const isDone = done || i < job.step;
+              const active = !done && i === job.step;
+              return (
+                <View key={s} style={styles.stepRow}>
+                  <View style={[styles.stepDot, isDone && { backgroundColor: c.accent }, active && styles.stepDotActive]}>
+                    {isDone && <Check size={14} strokeWidth={2.5} color="#fff" />}
+                  </View>
+                  <Text style={[styles.stepLabel, { color: active ? c.fg : isDone ? '#a8a8ad' : '#636368' }]}>{s}</Text>
+                  {active ? (
+                    <ActivityIndicator size="small" color={c.accent} />
+                  ) : (
+                    <Text style={[styles.stepState, { color: isDone ? '#a8a8ad' : '#636368' }]}>{isDone ? '已完成' : '等待中'}</Text>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+          {!done && job.hits > 0 && <Text style={styles.hits}>已检测到 {job.hits} 次击球</Text>}
+        </View>
+
+        {done ? (
+          <Button
+            title={mine > 0 ? `查看 ${mine} 个精彩回合` : `查看 ${job.candidates.length} 个回合`}
+            onPress={onShow}
+            icon={<ChevronRight size={19} strokeWidth={1.75} color="#fff" />}
+            style={{ marginTop: 28 }}
+          />
+        ) : (
+          <Button kind="quiet" title="返回首页，后台继续" onPress={() => router.replace('/')} style={{ marginTop: 24 }} />
+        )}
+      </ScrollView>
+    </Screen>
+  );
+}
+
+// ———————————————————— 结果 ————————————————————
+
+const RallyCard = memo(function RallyCard({
+  cand,
+  sheetUrl,
+  selected,
+  fastest,
+  onToggle,
+  onWinner,
+  onPreview,
+}: {
+  cand: Candidate;
+  sheetUrl: string;
+  selected: boolean;
+  fastest: boolean;
+  onToggle: (c: Candidate) => void;
+  onWinner: (c: Candidate) => void;
+  onPreview: (n: number) => void;
+}) {
+  const tag = winnerColor(c, cand.winner);
+  const label = cand.confirmed || cand.winner === 'unknown' ? BADGE[cand.winner] : `${BADGE[cand.winner]}？`;
+  const sp = cand.speed?.status === 'ok' ? cand.speed : null;
+  return (
+    <Pressable
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: selected }}
+      onPress={() => onToggle(cand)}
+      style={({ pressed }) => [styles.rally, pressed && { backgroundColor: 'rgba(35,36,41,0.96)', transform: [{ scale: 0.985 }] }]}
+    >
+      <View style={[styles.check, selected && styles.checkOn]}>{selected && <Check size={13} strokeWidth={2.5} color="#fff" />}</View>
+      <Pressable onPress={() => onPreview(cand.n)} accessibilityRole="button" accessibilityLabel={`播放第 ${cand.n + 1} 回合`}>
+        <View style={styles.rallyThumb}>
+          <Image source={{ uri: sheetUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          <View style={styles.rallyPlay}>
+            <Play size={13} color="#fff" fill="#fff" />
+          </View>
+        </View>
+      </Pressable>
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <View style={styles.rallyMeta}>
+          <Text style={{ color: '#88888e', fontSize: 10 }}>第 {cand.n + 1} 回合</Text>
+          <Pressable
+            onPress={() => onWinner(cand)}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`修改第 ${cand.n + 1} 回合的得分方`}
+            style={[styles.badge, { backgroundColor: tag.bg }, !cand.confirmed && styles.badgeTodo]}
+          >
+            <Text style={{ color: tag.fg, fontSize: 10, fontWeight: '600' }}>{label}</Text>
+          </Pressable>
+        </View>
+        <MonoText size={18} style={{ marginTop: 7, letterSpacing: 0.5 }}>
+          {fmtTime(cand.start)}
+        </MonoText>
+        <View style={styles.details}>
+          <Clock3 size={13} strokeWidth={1.75} color="#77777d" />
+          <Text style={styles.detailText}>{fmtClock(cand.end - cand.start)}</Text>
+          <View style={styles.dotSep} />
+          <Text style={styles.detailText}>{cand.hits} 拍</Text>
+          {sp && (
+            <>
+              <View style={styles.dotSep} />
+              <Text style={[styles.detailText, fastest && { color: c.ball, fontWeight: '600' }]}>≈{Math.round(sp.kmh)} km/h</Text>
+            </>
+          )}
+        </View>
+      </View>
+    </Pressable>
+  );
+});
+
+function ResultsView({ job, reload }: { job: Job; reload: () => void }) {
+  const id = job.id;
+  const { serverUrl, lastCorners } = useSettings();
   const insets = useSafeAreaInsets();
+  const draft = useDraft(id);
+  const counts = useMemo(
+    () => ({
+      mine: job.candidates.filter((x) => x.winner === 'me').length,
+      opponent: job.candidates.filter((x) => x.winner === 'coach').length,
+      all: job.candidates.length,
+    }),
+    [job],
+  );
+  const [filter, setFilter] = useState<Filter>(counts.mine > 0 ? 'mine' : 'all');
+  const [preview, setPreview] = useState<number | null>(null);
+  const [judging, setJudging] = useState<Candidate | null>(null);
+  const [more, setMore] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [overrides, setOverrides] = useState<Record<number, Winner>>({});
+
+  useEffect(() => {
+    ensureDraft(id, job.candidates);
+  }, [id, job.candidates]);
+
+  // 改得分方先改界面，服务端回来后以服务端为准
+  const cands = useMemo(
+    () => job.candidates.map((x) => (x.n in overrides ? { ...x, winner: overrides[x.n], confirmed: overrides[x.n] !== 'unknown' } : x)),
+    [job.candidates, overrides],
+  );
+  const shown = cands.filter((x) => (filter === 'mine' ? x.winner === 'me' : filter === 'opponent' ? x.winner === 'coach' : true));
+  const selected = useMemo(() => new Set(draft.clips.map((x) => x.n)), [draft]);
+
+  const onToggle = useCallback((cand: Candidate) => toggleClip(id, cand), [id]);
+  const pickWinner = async (cand: Candidate, w: Winner) => {
+    setJudging(null);
+    setOverrides((o) => ({ ...o, [cand.n]: w }));
+    // 标为我的得分 → 自动放进集锦；改成别的 → 拿出来
+    toggleClip(id, cand, w === 'me');
+    try {
+      await api.setWinner(serverUrl, id, cand.n, w);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : String(e));
+    } finally {
+      reload();
+      setOverrides((o) => {
+        const { [cand.n]: _, ...rest } = o;
+        return rest;
+      });
+    }
+  };
+
+  const reuseCalibration = async () => {
+    if (!lastCorners) return;
+    setMore(false);
+    try {
+      await api.setCalibration(serverUrl, id, lastCorners, 0.5);
+      reload();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : String(e));
+    }
+  };
+
+  const remove = async () => {
+    if (!confirmDelete) return setConfirmDelete(true);
+    try {
+      await api.deleteJob(serverUrl, id);
+      setMore(false);
+      router.replace('/');
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : String(e));
+    }
+  };
+
+  const total = clipsDuration(draft.clips);
+  const f = job.fastest;
+  const speedsRunning = job.speeds?.status === 'running';
+
+  const header = (
+    <View>
+      <View style={styles.resultSummary}>
+        <View style={{ flex: 1 }}>
+          <View style={styles.success}>
+            <Check size={13} strokeWidth={2.5} color={c.accent} />
+            <Text style={{ color: c.accent, fontSize: 11, fontWeight: '600' }}>分析完成</Text>
+          </View>
+          <H1 size={30} style={{ maxWidth: 220 }}>
+            高光，已经就位。
+          </H1>
+          <Text style={styles.summaryText}>
+            {job.llm.enabled
+              ? `已自动选择你的 ${counts.mine} 个得分片段`
+              : '未配置大模型：点每个回合右上角的标签，确认是谁得分'}
+          </Text>
+        </View>
+        <View style={{ alignItems: 'flex-end', gap: 3 }}>
+          <Text style={{ color: '#6f6f75', fontSize: 10 }}>我的得分</Text>
+          <MonoText size={21}>
+            {counts.mine}
+            <Text style={{ color: c.faint, fontSize: 14 }}> / {counts.all}</Text>
+          </MonoText>
+        </View>
+      </View>
+
+      {(f || speedsRunning) && (
+        <Pressable style={styles.fastest} onPress={() => f && setPreview(f.n)} disabled={!f}>
+          <Gauge size={18} strokeWidth={1.75} color={c.ball} />
+          <Text style={{ flex: 1, color: c.fg2, fontSize: 12 }}>
+            {f
+              ? `最快一板 · 第 ${f.n + 1} 回合 · ${Math.round(f.kmh_low)}–${Math.round(f.kmh_high)} km/h，可信度${CONFIDENCE_LABEL[f.confidence]}`
+              : `正在估算球速 ${Math.round((job.speeds?.progress ?? 0) * 100)}%`}
+          </Text>
+          {f && <MonoText size={15} style={{ color: c.ball }}>{Math.round(f.kmh)}</MonoText>}
+        </Pressable>
+      )}
+
+      <View style={styles.filterRow}>
+        <View style={styles.filterTabs}>
+          {FILTERS.map(([v, label]) => {
+            const on = filter === v;
+            return (
+              <Pressable
+                key={v}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: on }}
+                onPress={() => setFilter(v)}
+                style={[styles.filterTab, on && styles.filterTabOn]}
+              >
+                <Text style={{ color: on ? c.fg : '#7f7f85', fontSize: 11, fontWeight: on ? '600' : '400' }}>
+                  {label} {counts[v]}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+      {error && <Text style={{ color: c.danger, fontSize: 12, marginTop: 10 }}>{error}</Text>}
+    </View>
+  );
+
+  return (
+    <Screen>
+      <View style={{ paddingHorizontal: 20 }}>
+        <TopBar
+          title={jobTitle(job.filename)}
+          onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+          right={
+            <IconButton label="更多选项" onPress={() => (setConfirmDelete(false), setMore(true))}>
+              <MoreHorizontal size={22} strokeWidth={1.75} color={c.fg} />
+            </IconButton>
+          }
+        />
+      </View>
+      <FlatList
+        data={shown}
+        keyExtractor={(x) => String(x.n)}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 110 + insets.bottom, gap: 9 }}
+        ListHeaderComponent={header}
+        ListHeaderComponentStyle={{ marginBottom: 4 }}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <Text style={styles.empty}>
+            {filter === 'mine' ? '还没有标为「我的得分」的回合。\n切到「全部回合」，点标签确认。' : '这里没有回合。'}
+          </Text>
+        }
+        renderItem={({ item }) => (
+          <RallyCard
+            cand={item}
+            sheetUrl={api.sheetUrl(serverUrl, id, item.n)}
+            selected={selected.has(item.n)}
+            fastest={f?.n === item.n}
+            onToggle={onToggle}
+            onWinner={setJudging}
+            onPreview={setPreview}
+          />
+        )}
+      />
+
+      <View style={[styles.editBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+        <View style={{ gap: 4 }}>
+          <Text style={{ color: c.fg, fontSize: 13, fontWeight: '600' }}>{draft.clips.length} 个片段</Text>
+          <Text style={{ color: '#77777d', fontSize: 10 }}>预计 {fmtClock(total)}</Text>
+        </View>
+        <Button
+          title="编辑集锦"
+          disabled={draft.clips.length === 0}
+          onPress={() => router.push({ pathname: '/editor/[id]', params: { id } })}
+          icon={<ChevronRight size={18} strokeWidth={1.75} color="#fff" />}
+          style={styles.compact}
+        />
+      </View>
+
+      <Sheet visible={!!judging} onClose={() => setJudging(null)}>
+        {judging && (
+          <>
+            <Text style={styles.sheetTitle}>第 {judging.n + 1} 回合是谁得分？</Text>
+            <Text style={styles.sheetText}>{llmLine(judging)}</Text>
+            <Button
+              kind="secondary"
+              title="播放这一分"
+              iconLeft
+              icon={<Play size={16} color={c.fg} fill={c.fg} />}
+              onPress={() => (setPreview(judging.n), setJudging(null))}
+            />
+            <View style={styles.choices}>
+              {CHOICES.map((w) => {
+                const on = judging.confirmed && judging.winner === w;
+                return (
+                  <Pressable
+                    key={w}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: on }}
+                    onPress={() => pickWinner(judging, on ? 'unknown' : w)}
+                    style={[styles.choice, on && { backgroundColor: c.accent }]}
+                  >
+                    <Text style={{ color: on ? '#fff' : c.fg, fontSize: 14, fontWeight: '600' }}>{w === 'me' ? '我的得分' : w === 'coach' ? '对手得分' : WINNER_LABEL[w]}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </>
+        )}
+      </Sheet>
+
+      <Sheet visible={more} onClose={() => setMore(false)}>
+        <Text style={styles.sheetTitle}>{jobTitle(job.filename)}</Text>
+        <Pressable
+          style={styles.sheetRow}
+          onPress={() => (setMore(false), router.push({ pathname: '/calibrate/[id]', params: { id } }))}
+        >
+          <Crosshair size={19} strokeWidth={1.75} color={c.fg2} />
+          <View style={{ flex: 1, gap: 3 }}>
+            <Text style={styles.sheetRowTitle}>{job.calibration ? '重新标定球台' : '球台标定'}</Text>
+            <Text style={styles.sheetRowSub}>
+              {job.calibration ? '已标定，用于估算出手球速' : '点一次球台四个角，就能估算每一分的出手球速'}
+            </Text>
+          </View>
+          <ChevronRight size={18} strokeWidth={1.75} color="#5e5e63" />
+        </Pressable>
+        {!job.calibration && lastCorners && (
+          <Pressable style={styles.sheetRow} onPress={reuseCalibration}>
+            <Crosshair size={19} strokeWidth={1.75} color={c.accent} />
+            <View style={{ flex: 1, gap: 3 }}>
+              <Text style={styles.sheetRowTitle}>沿用上次的标定</Text>
+              <Text style={styles.sheetRowSub}>机位没动过时直接用</Text>
+            </View>
+          </Pressable>
+        )}
+        <Pressable style={styles.sheetRow} onPress={remove}>
+          <Trash2 size={19} strokeWidth={1.75} color={c.danger} />
+          <Text style={[styles.sheetRowTitle, { color: c.danger, flex: 1 }]}>{confirmDelete ? '再点一次，确认删除项目' : '删除项目'}</Text>
+        </Pressable>
+      </Sheet>
+
+      <PreviewModal
+        url={preview === null ? null : api.previewUrl(serverUrl, id, preview)}
+        title={preview === null ? '' : `第 ${preview + 1} 回合`}
+        onClose={() => setPreview(null)}
+      />
+    </Screen>
+  );
+}
+
+// ———————————————————— 页面 ————————————————————
+
+export default function JobScreen() {
+  const { id, fresh } = useLocalSearchParams<{ id: string; fresh?: string }>();
+  const { serverUrl } = useSettings();
   const [job, setJob] = useState<Job | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<Filter>('todo');
-  const [preview, setPreview] = useState<number | null>(null);
-  const exportSeen = useRef(false);
+  // 在本页看着分析跑完的，先停在“分析完成”，点按钮再进结果
+  const [sawBusy, setSawBusy] = useState(fresh === '1');
+  const [showResults, setShowResults] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -39,204 +458,129 @@ export default function JobScreen() {
     }
   }, [serverUrl, id]);
 
-  // 处理中或导出中时每 1.5 秒拉一次状态
-  const busy =
-    !job ||
-    ['uploading', 'queued', 'processing'].includes(job.status) ||
-    job.export?.status === 'running' ||
-    job.speeds?.status === 'running';
+  const busy = !job || ['uploading', 'queued', 'processing'].includes(job.status) || job.speeds?.status === 'running';
+  useEffect(() => {
+    if (job && job.status !== 'review' && job.status !== 'failed') setSawBusy(true);
+  }, [job]);
   useEffect(() => {
     load();
     if (!busy) return;
     const t = setInterval(load, 1500);
     return () => clearInterval(t);
   }, [load, busy]);
-
-  // 从标定页回来时刷新一次（处理完成后不再轮询）
+  // 从标定页回来时刷新
   useFocusEffect(
     useCallback(() => {
       load();
     }, [load]),
   );
 
-  // 导出完成后自动跳到成片页（只跳一次）
-  useEffect(() => {
-    if (job?.export?.status === 'running') exportSeen.current = true;
-    if (exportSeen.current && job?.export?.status === 'done') {
-      exportSeen.current = false;
-      router.push({ pathname: '/result/[id]', params: { id } });
-    }
-  }, [job?.export?.status, id]);
-
-  const onPick = useCallback(
-    async (n: number, winner: Winner) => {
-      // 先改界面，失败再回滚
-      setJob((j) =>
-        j && { ...j, candidates: j.candidates.map((x) => (x.n === n ? { ...x, winner, confirmed: winner !== 'unknown' } : x)) },
-      );
-      try {
-        await api.setWinner(serverUrl, id, n, winner);
-        load(); // 最快一板由服务端按“我赢”的分重新挑选
-      } catch (e) {
-        setError(e instanceof ApiError ? e.message : String(e));
-        load();
-      }
-    },
-    [serverUrl, id, load],
-  );
-
-  const counts = useMemo(() => {
-    const cs = job?.candidates ?? [];
-    return {
-      all: cs.length,
-      me: cs.filter((x) => x.winner === 'me').length,
-      todo: cs.filter((x) => !x.confirmed).length,
-    };
-  }, [job]);
-
-  const shown = useMemo(() => {
-    const cs = job?.candidates ?? [];
-    if (filter === 'me') return cs.filter((x) => x.winner === 'me');
-    if (filter === 'todo') return cs.filter((x) => !x.confirmed);
-    return cs;
-  }, [job, filter]);
-
   if (!job) {
     return (
-      <View style={styles.center}>
-        {error ? <Text style={{ color: c.danger, padding: 24 }}>{error}</Text> : <ActivityIndicator />}
-      </View>
+      <Screen style={{ paddingHorizontal: 20 }}>
+        <TopBar />
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          {error ? <Text style={{ color: c.danger, padding: 24 }}>{error}</Text> : <ActivityIndicator color={c.muted} />}
+        </View>
+      </Screen>
     );
   }
 
   if (job.status === 'failed') {
     return (
-      <View style={styles.page}>
-        <Card>
-          <Text style={[styles.h3, { color: c.danger }]}>处理失败</Text>
-          <Text style={{ color: c.fg }}>{job.error}</Text>
-        </Card>
-      </View>
-    );
-  }
-
-  if (job.status !== 'review') {
-    return (
-      <View style={styles.page}>
-        <Card>
-          <Text style={[styles.h3, { color: c.fg }]}>{job.filename}</Text>
-          <ProgressBar value={job.progress} />
-          {job.steps.map((s, i) => {
-            const done = i < job.step;
-            const now = i === job.step;
-            return (
-              <View key={s} style={styles.stepRow}>
-                <Text style={{ width: 22, color: done ? c.t1 : now ? c.primary : c.muted }}>{done ? '✓' : now ? '●' : '○'}</Text>
-                <Text style={{ color: done || now ? c.fg : c.muted, fontWeight: now ? '700' : '400' }}>{s}</Text>
-                {now && <ActivityIndicator size="small" style={{ marginLeft: 8 }} />}
-              </View>
-            );
-          })}
-          {job.hits > 0 && <Text style={{ color: c.muted, fontSize: 13 }}>已检测到 {job.hits} 次击球</Text>}
-        </Card>
-        {job.video && <CalibrationCard job={job} onChanged={load} />}
-      </View>
-    );
-  }
-
-  const exp = job.export;
-  const exporting = exp?.status === 'running';
-
-  return (
-    <View style={{ flex: 1 }}>
-      <FlatList
-        data={shown}
-        keyExtractor={(x: Candidate) => String(x.n)}
-        contentContainerStyle={[styles.page, { paddingBottom: 140 + insets.bottom }]}
-        ListHeaderComponent={
-          <View style={{ gap: 12 }}>
-            <Text style={{ color: c.muted, fontSize: 13, lineHeight: 19 }}>
-              从声音里找到 {job.hits} 次击球，切出 {counts.all} 个候选分。
-              {job.llm.enabled ? '大模型已预判，请核对。' : '未配置大模型，请逐个选择结果。'}
-              只有标为「我赢」的分会进入成片。
-            </Text>
-            <SpeedSummary job={job} onPlay={setPreview} />
-            <CalibrationCard job={job} onChanged={load} />
-            <View style={styles.filters}>
-              {FILTERS.map(([f, label]) => {
-                const on = filter === f;
-                return (
-                  <Pressable
-                    key={f}
-                    onPress={() => setFilter(f)}
-                    accessibilityRole="tab"
-                    accessibilityState={{ selected: on }}
-                    style={[styles.filter, { backgroundColor: on ? c.primary : c.chip }]}
-                  >
-                    <Text style={{ color: on ? c.onPrimary : c.fg, fontWeight: '600', fontSize: 14 }}>
-                      {label} {counts[f]}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-            {error && <Text style={{ color: c.danger }}>{error}</Text>}
-          </View>
-        }
-        ListEmptyComponent={
-          <Text style={{ color: c.muted, textAlign: 'center', paddingVertical: 32 }}>
-            {filter === 'todo' ? '全部确认完了。' : filter === 'me' ? '还没有标为「我赢」的分。' : '没有找到候选分。'}
-          </Text>
-        }
-        renderItem={({ item }) => (
-          <CandidateCard
-            cand={item}
-            sheetUrl={api.sheetUrl(serverUrl, id, item.n)}
-            onPick={onPick}
-            onPreview={setPreview}
-            speedsRunning={job.speeds?.status === 'running'}
-            fastest={job.fastest?.n === item.n}
-          />
-        )}
-      />
-
-      <View style={[styles.footer, { backgroundColor: c.surface, borderColor: c.line, paddingBottom: 12 + insets.bottom }]}>
-        {exporting && <ProgressBar value={exp.progress} color={c.t1} />}
-        {exp?.status === 'failed' && <Text style={{ color: c.danger, fontSize: 13 }}>{exp.error}</Text>}
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          {exp?.status === 'done' && (
-            <Button
-              kind="secondary"
-              title="看成片"
-              onPress={() => router.push({ pathname: '/result/[id]', params: { id } })}
-              style={{ flex: 1 }}
-            />
-          )}
-          <Button
-            title={exporting ? '正在导出…' : `导出我的得分球（${counts.me}）`}
-            onPress={() => api.startExport(serverUrl, id, ['me']).then(load, (e) => setError(String(e.message ?? e)))}
-            disabled={counts.me === 0}
-            loading={exporting}
-            style={{ flex: 2 }}
-          />
+      <Screen style={{ paddingHorizontal: 20 }}>
+        <TopBar title={jobTitle(job.filename)} />
+        <View style={[styles.progressCard, { marginTop: 24, gap: 8 }]}>
+          <Text style={{ color: c.danger, fontSize: 16, fontWeight: '700' }}>处理失败</Text>
+          <Text style={{ color: c.fg2, fontSize: 13, lineHeight: 19, fontFamily: mono }}>{job.error}</Text>
         </View>
-      </View>
+      </Screen>
+    );
+  }
 
-      <PreviewModal
-        url={preview === null ? null : api.previewUrl(serverUrl, id, preview)}
-        title={preview === null ? '' : `第 ${preview + 1} 分`}
-        onClose={() => setPreview(null)}
-      />
-    </View>
-  );
+  if (job.status !== 'review' || (sawBusy && !showResults)) {
+    return <AnalysisView job={job} done={job.status === 'review'} onShow={() => setShowResults(true)} />;
+  }
+
+  return <ResultsView job={job} reload={load} />;
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  page: { padding: 16, gap: 14 },
-  h3: { fontSize: 16, fontWeight: '700' },
-  stepRow: { flexDirection: 'row', alignItems: 'center' },
-  filters: { flexDirection: 'row', gap: 8 },
-  filter: { borderRadius: 99, paddingHorizontal: 14, paddingVertical: 7 },
-  footer: { position: 'absolute', left: 0, right: 0, bottom: 0, borderTopWidth: 1, paddingHorizontal: 16, paddingTop: 12, gap: 8 },
+  page: { paddingHorizontal: 20, paddingBottom: 32 },
+  hero: { paddingTop: 38, alignItems: 'center' },
+  orbit: {
+    width: 126,
+    height: 126,
+    borderRadius: 63,
+    marginBottom: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#21171c',
+    borderWidth: 16,
+    borderColor: 'rgba(89,59,71,0.14)',
+  },
+  heroText: { maxWidth: 290, marginTop: 14, color: c.muted, fontSize: 13, lineHeight: 20, textAlign: 'center' },
+  progressCard: { marginTop: 38, padding: 22, borderRadius: 24, backgroundColor: c.surface },
+  pct: { color: c.fg, fontFamily: mono, fontSize: 35, fontWeight: '700' },
+  stepRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  stepDot: { width: 22, height: 22, borderRadius: 11, marginRight: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: '#29292d' },
+  stepDotActive: { borderWidth: 2, borderColor: c.accent },
+  stepLabel: { flex: 1, fontSize: 13, fontWeight: '600' },
+  stepState: { fontSize: 10 },
+  hits: { marginTop: 16, color: '#636368', fontSize: 11 },
+  resultSummary: { marginTop: 13, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 },
+  success: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 10 },
+  summaryText: { marginTop: 7, color: '#85858b', fontSize: 12, lineHeight: 17 },
+  fastest: { marginTop: 18, padding: 13, borderRadius: 16, backgroundColor: c.ballBg, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  filterRow: { marginTop: 22, flexDirection: 'row', alignItems: 'center', gap: 7 },
+  filterTabs: { flex: 1, height: 42, padding: 3, flexDirection: 'row', borderRadius: 13, backgroundColor: c.surface2 },
+  filterTab: { flex: 1, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  filterTabOn: { backgroundColor: 'rgba(255,255,255,0.12)' },
+  rally: { minHeight: 96, padding: 10, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.surface, borderRadius: 20 },
+  check: {
+    position: 'absolute',
+    zIndex: 2,
+    top: 7,
+    left: 7,
+    width: 21,
+    height: 21,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(5,5,7,0.62)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.32)',
+  },
+  checkOn: { backgroundColor: c.accent, borderColor: c.accent },
+  rallyThumb: { width: 104, height: 76, borderRadius: 12, overflow: 'hidden', backgroundColor: '#30232a', alignItems: 'center', justifyContent: 'center' },
+  rallyPlay: { width: 29, height: 29, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)' },
+  rallyMeta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
+  badge: { paddingHorizontal: 7, paddingVertical: 4, borderRadius: 6 },
+  badgeTodo: { borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.25)' },
+  details: { marginTop: 4, flexDirection: 'row', alignItems: 'center', gap: 4 },
+  detailText: { color: '#77777d', fontSize: 10 },
+  dotSep: { width: 2, height: 2, borderRadius: 1, marginHorizontal: 3, backgroundColor: '#55555a' },
+  empty: { color: c.faint, textAlign: 'center', paddingVertical: 48, fontSize: 13, lineHeight: 20 },
+  editBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingTop: 12,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(10,10,11,0.96)',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255,255,255,0.08)',
+  },
+  compact: { minHeight: 44, paddingHorizontal: 19 },
+  sheetTitle: { color: c.fg, fontSize: 17, fontWeight: '700' },
+  sheetText: { color: c.fg2, fontSize: 13, lineHeight: 19 },
+  choices: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  choice: { flexBasis: '48%', flexGrow: 1, minHeight: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2a2a2e' },
+  sheetRow: { minHeight: 60, flexDirection: 'row', alignItems: 'center', gap: 13, paddingHorizontal: 14, borderRadius: 16, backgroundColor: c.surface },
+  sheetRowTitle: { color: c.fg, fontSize: 14, fontWeight: '600' },
+  sheetRowSub: { color: '#727277', fontSize: 11 },
 });
