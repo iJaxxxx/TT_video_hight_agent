@@ -6,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button, Eyebrow, H1, ProgressBar, Screen, TopBar } from '../components/ui';
 import { ApiError, uploadVideo, type MeSide } from '../lib/api';
-import { createLocalJob } from '../lib/local/jobs';
+import { createLocalJob, localAvailable } from '../lib/local/jobs';
 import { fmtClock, getPendingVideo, setPendingVideo } from '../lib/draft';
 import { useSettings } from '../lib/settings';
 import { colors as c } from '../lib/theme';
@@ -53,6 +53,9 @@ export default function ImportScreen() {
   const [side, setSide] = useState<MeSide>(meSide);
   const [upload, setUpload] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /** 连不上服务器、而手机支持本地解析时，在错误下面给一个切换按钮 */
+  const [offerLocal, setOfferLocal] = useState(false);
+  const localRun = localMode && localAvailable();
 
   if (!video) {
     // 直接打开了这个页面（比如网页刷新），回首页重新选
@@ -66,15 +69,23 @@ export default function ImportScreen() {
 
   const start = async () => {
     setError(null);
+    setOfferLocal(false);
     setUpload(0);
     update({ meSide: side });
     try {
       const params = { me_side: side, min_hits: 2 };
-      const job = localMode ? await createLocalJob(video, params) : await uploadVideo(serverUrl, video, params, setUpload);
+      const job = localRun ? await createLocalJob(video, params) : await uploadVideo(serverUrl, video, params, setUpload);
       setPendingVideo(null);
       router.replace({ pathname: '/job/[id]', params: { id: job.id, fresh: '1' } });
     } catch (e) {
-      setError(e instanceof ApiError || localMode ? (e instanceof Error ? e.message : String(e)) : `上传失败：${String(e)}`);
+      if (localRun || e instanceof ApiError) {
+        setError(e instanceof Error ? e.message : String(e));
+      } else if (localAvailable()) {
+        setError(`上传失败：连不上服务器 ${serverUrl}。可以改用本地解析，视频不上传，直接在手机上分析。`);
+        setOfferLocal(true);
+      } else {
+        setError(`上传失败：${String(e)}`);
+      }
       setUpload(null);
     }
   };
@@ -119,8 +130,20 @@ export default function ImportScreen() {
           </View>
         )}
         {error && <Text style={styles.error}>{error}</Text>}
+        {offerLocal && (
+          <Button
+            title="开启本地解析"
+            kind="secondary"
+            onPress={() => {
+              update({ localMode: true });
+              setOfferLocal(false);
+              setError(null);
+            }}
+            style={{ marginTop: 12 }}
+          />
+        )}
         <Text style={styles.note}>
-          {localMode
+          {localRun
             ? '本地解析（测试）：视频不上传，分析时请保持 App 在前台'
             : upload === null
               ? '分析约需 3–5 分钟，可在后台继续运行'
