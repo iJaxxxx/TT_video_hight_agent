@@ -2,6 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Card, MonoText, ProgressBar } from '../../components/ui';
 import { api, fmtSpeed, type Job } from '../../lib/api';
@@ -15,6 +16,7 @@ type SaveState = { s: 'idle' } | { s: 'downloading'; p: number } | { s: 'saved' 
 export default function ResultScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { serverUrl } = useSettings();
+  const insets = useSafeAreaInsets();
   const url = api.clipUrl(serverUrl, id);
   const player = useVideoPlayer(url, (p) => p.play());
   const [job, setJob] = useState<Job | null>(null);
@@ -36,7 +38,7 @@ export default function ResultScreen() {
 
   const exp = job?.export;
   return (
-    <ScrollView contentContainerStyle={styles.page} style={{ backgroundColor: c.bg }}>
+    <ScrollView contentContainerStyle={[styles.page, { paddingBottom: 20 + insets.bottom }]} style={{ backgroundColor: c.bg }}>
       <VideoView player={player} style={styles.video} nativeControls contentFit="contain" allowsPictureInPicture={false} />
       {exp?.status === 'done' && (
         <Text style={{ color: c.muted, fontSize: 13 }}>

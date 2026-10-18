@@ -22,7 +22,7 @@ export default function Projects() {
   });
 
   return (
-    <Screen>
+    <Screen bottomInset={false}>
       <ScrollView
         contentContainerStyle={styles.page}
         keyboardShouldPersistTaps="handled"

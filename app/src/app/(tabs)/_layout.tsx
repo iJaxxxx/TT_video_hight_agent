@@ -14,7 +14,7 @@ const TABS = {
 function TabBar({ state, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.bar, { paddingBottom: Math.max(insets.bottom, 12) }]} accessibilityRole="tablist">
+    <View style={[styles.bar, { paddingBottom: insets.bottom > 0 ? insets.bottom : 8 }]} accessibilityRole="tablist">
       {state.routes.map((route, i) => {
         const tab = TABS[route.name as keyof typeof TABS];
         if (!tab) return null;
@@ -51,12 +51,13 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 52,
-    paddingTop: 9,
+    paddingHorizontal: 43,
+    paddingTop: 2,
     backgroundColor: 'rgba(10,10,11,0.96)',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(255,255,255,0.06)',
   },
-  item: { width: 58, alignItems: 'center', gap: 4 },
+  // 可点区域 ≥ 76×52，图标和文字位置不变
+  item: { width: 76, minHeight: 52, alignItems: 'center', justifyContent: 'center', gap: 4 },
   label: { fontSize: 10 },
 });

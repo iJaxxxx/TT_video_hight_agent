@@ -78,7 +78,7 @@ export default function Profile() {
   const statusColor = health.state === 'ok' ? c.t1 : health.state === 'error' ? c.danger : c.muted;
 
   return (
-    <Screen>
+    <Screen bottomInset={false}>
       <ScrollView contentContainerStyle={styles.page} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View>

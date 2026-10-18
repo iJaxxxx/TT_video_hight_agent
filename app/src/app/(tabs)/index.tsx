@@ -12,7 +12,7 @@ export default function Home() {
   const recent = (jobs ?? []).slice(0, 3);
 
   return (
-    <Screen>
+    <Screen bottomInset={false}>
       <ScrollView
         contentContainerStyle={styles.page}
         showsVerticalScrollIndicator={false}

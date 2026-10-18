@@ -326,7 +326,7 @@ function ResultsView({ job, reload }: { job: Job; reload: () => void }) {
   );
 
   return (
-    <Screen>
+    <Screen bottomInset={false}>
       <View style={{ paddingHorizontal: 20 }}>
         <TopBar
           title={jobTitle(job.filename)}
@@ -363,7 +363,7 @@ function ResultsView({ job, reload }: { job: Job; reload: () => void }) {
         )}
       />
 
-      <View style={[styles.editBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+      <View style={[styles.editBar, { paddingBottom: insets.bottom + 12 }]}>
         <View style={{ gap: 4 }}>
           <Text style={{ color: c.fg, fontSize: 13, fontWeight: '600' }}>{draft.clips.length} 个片段</Text>
           <Text style={{ color: '#77777d', fontSize: 10 }}>预计 {fmtClock(total)}</Text>

@@ -112,10 +112,26 @@ export function TopBar({ title, right, onBack, muted }: { title?: string; right?
   );
 }
 
-/** 页面容器：黑底 + 顶部安全区 + 左右 20 边距 */
-export function Screen({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+/**
+ * 页面容器：黑底 + 上下安全区。
+ * 底部默认让开 Home 横条，否则页面最后一个按钮会落进系统手势区，很难点；
+ * 自己有底栏的页面（标签页、回合列表）传 bottomInset={false}，由底栏处理。
+ */
+export function Screen({
+  children,
+  style,
+  bottomInset = true,
+}: {
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
+  bottomInset?: boolean;
+}) {
   const insets = useSafeAreaInsets();
-  return <View style={[{ flex: 1, backgroundColor: c.bg, paddingTop: insets.top }, style]}>{children}</View>;
+  return (
+    <View style={[{ flex: 1, backgroundColor: c.bg, paddingTop: insets.top, paddingBottom: bottomInset ? insets.bottom : 0 }, style]}>
+      {children}
+    </View>
+  );
 }
 
 export function Eyebrow({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
