@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import UniformTypeIdentifiers
 
 struct ClipRecord: Record {
   @Field var start: Double = 0
@@ -9,6 +10,12 @@ struct ClipRecord: Record {
 public class LocalMediaModule: Module {
   public func definition() -> ModuleDefinition {
     Name("LocalMedia")
+
+    /// 分享成片：在微信里显示为视频而不是文件（见 shareVideo）
+    AsyncFunction("shareVideo") { (uri: URL, promise: Promise) in
+      self.shareVideo(uri, promise: promise)
+    }
+    .runOnQueue(.main)
 
     Events("onProgress")
 
@@ -74,6 +81,32 @@ public class LocalMediaModule: Module {
       try FileManager.default.moveItem(at: uri, to: out)
       return out.absoluteString
     }
+  }
+
+  /// 以「视频」而不是「文件」分享：只登记 MPEG-4 视频类型的 NSItemProvider，不带文件链接。
+  /// 直接把文件 URL 交给分享面板（expo-sharing 的做法）时，微信等 App 会把它当文件发送。
+  private func shareVideo(_ url: URL, promise: Promise) {
+    guard let vc = appContext?.utilities?.currentViewController() else {
+      return promise.reject(Exception(name: "ShareFailed", description: "找不到当前页面，无法弹出分享"))
+    }
+    let controller: UIActivityViewController
+    if #available(iOS 17.0, *) {
+      let provider = NSItemProvider()
+      provider.suggestedName = url.deletingPathExtension().lastPathComponent
+      provider.registerFileRepresentation(forTypeIdentifier: UTType.mpeg4Movie.identifier, fileOptions: [], visibility: .all) { done in
+        done(url, false, nil)
+        return nil
+      }
+      controller = UIActivityViewController(activityItemsConfiguration: UIActivityItemsConfiguration(itemProviders: [provider]))
+    } else {
+      controller = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    }
+    controller.completionWithItemsHandler = { _, _, _, _ in promise.resolve(nil) }
+    if let pop = controller.popoverPresentationController {
+      pop.sourceView = vc.view
+      pop.sourceRect = CGRect(x: vc.view.bounds.midX, y: vc.view.bounds.maxY, width: 0, height: 0)
+    }
+    vc.present(controller, animated: true)
   }
 
   private func cacheFile(ext: String) -> URL {

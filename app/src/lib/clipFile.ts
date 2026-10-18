@@ -3,6 +3,8 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { Linking, Platform } from 'react-native';
 
+import LocalMedia from '../../modules/local-media';
+
 /** 把服务端的成片下载到本地缓存。每次导出的成片不同，用 tag 区分文件名 */
 async function download(url: string, name: string, onProgress?: (p: number) => void) {
   return File.downloadFileAsync(url, new File(Paths.cache, name), {
@@ -34,5 +36,7 @@ export async function shareClip(url: string, name: string, onProgress?: (p: numb
   }
   if (!(await Sharing.isAvailableAsync())) throw new Error('这台设备不支持系统分享');
   const file = await localOrDownload(url, name, onProgress);
+  // iOS 开发版有原生模块：按视频分享，微信里显示为视频；expo-sharing 传的是文件，微信会当文件发
+  if (Platform.OS === 'ios' && LocalMedia) return LocalMedia.shareVideo(file.uri);
   await Sharing.shareAsync(file.uri, { mimeType: 'video/mp4', UTI: 'public.mpeg-4', dialogTitle: '分享高光集锦' });
 }

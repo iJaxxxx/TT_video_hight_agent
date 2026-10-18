@@ -15,6 +15,8 @@ declare class LocalMediaModule extends NativeModule<{ onProgress: (e: ProgressEv
   ): Promise<{ uri: string; duration: number; seconds: number }>;
   /** 移到 Library/Application Support/LocalMedia/（不会被系统清理、不进 iCloud 备份），返回新路径 */
   persistFile(uri: string): Promise<string>;
+  /** 以视频（而不是文件）弹出系统分享，微信里会显示为视频 */
+  shareVideo(uri: string): Promise<void>;
 }
 
 /** Expo Go、网页和 Android 上没有这个原生模块（需要 iOS dev build），此时为 null */
