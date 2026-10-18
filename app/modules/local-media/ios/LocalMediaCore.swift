@@ -211,7 +211,7 @@ public enum LocalMediaCore {
     }
   }
 
-  /// 把若干片段按顺序拼成一个 mp4（H.264 + AAC，硬件编码）。progress 0–1。
+  /// 把若干片段按顺序拼成一个 mp4（H.264 硬件编码 + AAC 128k，码率见 videoBitrate）。progress 0–1。
   public static func exportClips(
     from url: URL, clips: [ClipRange], ratio: String?, quality: String?, to outURL: URL,
     progress: ((Double) -> Void)? = nil,
@@ -263,36 +263,203 @@ public enum LocalMediaCore {
       let fps = vTrack.nominalFrameRate > 0 ? vTrack.nominalFrameRate : 30
       vc.frameDuration = CMTime(value: 1, timescale: CMTimeScale(fps.rounded()))
 
-      // 分辨率由 videoComposition.renderSize 决定；HighestQuality 不会再按预设缩放
-      let preset = AVAssetExportPresetHighestQuality
-      guard let session = AVAssetExportSession(asset: comp, presetName: preset) else {
-        throw LocalMediaError.exportFailed("无法创建导出会话")
-      }
-      try? FileManager.default.removeItem(at: outURL)
-      session.outputURL = outURL
-      session.outputFileType = .mp4
-      session.shouldOptimizeForNetworkUse = true
-      session.videoComposition = vc
+      // 和 server 一样按 SDR BT.709 出片（HDR 源在合成时转成 SDR）
+      vc.colorPrimaries = AVVideoColorPrimaries_ITU_R_709_2
+      vc.colorTransferFunction = AVVideoTransferFunction_ITU_R_709_2
+      vc.colorYCbCrMatrix = AVVideoYCbCrMatrix_ITU_R_709_2
 
-      let timer = DispatchSource.makeTimerSource(queue: .global())
-      timer.schedule(deadline: .now(), repeating: .milliseconds(250))
-      timer.setEventHandler { progress?(Double(session.progress)) }
-      timer.resume()
+      let audioTrack = ca.flatMap { $0.timeRange.duration > .zero ? $0 : nil }
+      try? FileManager.default.removeItem(at: outURL)
+      let job = try ExportJob(
+        composition: comp, videoComposition: vc, audioTrack: audioTrack, size: geo.size, fps: Double(fps),
+        duration: cursor, to: outURL)
       let seconds = cursor.seconds
-      session.exportAsynchronously {
-        timer.cancel()
-        switch session.status {
-        case .completed:
-          progress?(1)
-          completion(.success(seconds))
-        case .cancelled:
-          completion(.failure(LocalMediaError.exportFailed("已取消")))
-        default:
-          completion(.failure(LocalMediaError.exportFailed(session.error?.localizedDescription ?? "未知错误")))
+      DispatchQueue.global(qos: .userInitiated).async {
+        job.run(progress: progress) { error in
+          if let error {
+            try? FileManager.default.removeItem(at: outURL)
+            completion(.failure(error))
+          } else {
+            progress?(1)
+            completion(.success(seconds))
+          }
         }
       }
     } catch {
       completion(.failure(error))
+    }
+  }
+
+  /// 视频码率。AVAssetExportSession 的 HighestQuality 不能设码率（成片 9–16 Mbps），这里按像素数 × 帧率定：
+  /// 60fps 时 1920×1080 ≈ 8.7 Mbps、1280×720 ≈ 3.9 Mbps；30fps 每像素给多一点（帧间差异更大）。
+  static func videoBitrate(size: CGSize, fps: Double) -> Int {
+    let bitsPerPixel = fps > 40 ? 0.07 : 0.1
+    let bps = Double(size.width * size.height) * max(fps, 1) * bitsPerPixel
+    return Int(min(max(bps, 1_500_000), 12_000_000))
+  }
+
+  static let audioBitrate = 128_000
+}
+
+/// AVAssetReader（读合成后的画面和音频）→ AVAssetWriter（H.264 硬件编码 + AAC）
+private final class ExportJob {
+  let reader: AVAssetReader
+  let writer: AVAssetWriter
+  let videoOut: AVAssetReaderVideoCompositionOutput
+  let videoIn: AVAssetWriterInput
+  let audioOut: AVAssetReaderTrackOutput?
+  let audioIn: AVAssetWriterInput?
+  let duration: CMTime
+
+  init(
+    composition: AVComposition, videoComposition: AVVideoComposition, audioTrack: AVCompositionTrack?,
+    size: CGSize, fps: Double, duration: CMTime, to outURL: URL
+  ) throws {
+    self.duration = duration
+    reader = try AVAssetReader(asset: composition)
+    reader.timeRange = CMTimeRange(start: .zero, duration: duration)
+    writer = try AVAssetWriter(outputURL: outURL, fileType: .mp4)
+    writer.shouldOptimizeForNetworkUse = true
+
+    videoOut = AVAssetReaderVideoCompositionOutput(
+      videoTracks: composition.tracks(withMediaType: .video),
+      videoSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange])
+    videoOut.videoComposition = videoComposition
+    videoOut.alwaysCopiesSampleData = false
+    guard reader.canAdd(videoOut) else { throw LocalMediaError.exportFailed("无法读取画面") }
+    reader.add(videoOut)
+
+    let compression: [String: Any] = [
+      AVVideoAverageBitRateKey: LocalMediaCore.videoBitrate(size: size, fps: fps),
+      AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
+      AVVideoH264EntropyModeKey: AVVideoH264EntropyModeCABAC,
+      AVVideoExpectedSourceFrameRateKey: fps,
+      AVVideoMaxKeyFrameIntervalDurationKey: 2,
+      AVVideoAllowFrameReorderingKey: true,
+    ]
+    videoIn = AVAssetWriterInput(mediaType: .video, outputSettings: [
+      AVVideoCodecKey: AVVideoCodecType.h264,
+      AVVideoWidthKey: Int(size.width),
+      AVVideoHeightKey: Int(size.height),
+      AVVideoCompressionPropertiesKey: compression,
+      AVVideoColorPropertiesKey: [
+        AVVideoColorPrimariesKey: AVVideoColorPrimaries_ITU_R_709_2,
+        AVVideoTransferFunctionKey: AVVideoTransferFunction_ITU_R_709_2,
+        AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
+      ],
+    ])
+    videoIn.expectsMediaDataInRealTime = false
+    guard writer.canAdd(videoIn) else { throw LocalMediaError.exportFailed("无法写入画面") }
+    writer.add(videoIn)
+
+    if let audioTrack {
+      // 声道数和采样率跟源走（iPhone 上是 48k 立体声），多于两声道的下混成立体声
+      var channels = 2
+      var sampleRate = 48000.0
+      if let desc = audioTrack.formatDescriptions.first,
+         let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(desc as! CMAudioFormatDescription)?.pointee {
+        channels = min(2, max(1, Int(asbd.mChannelsPerFrame)))
+        if asbd.mSampleRate > 0 { sampleRate = asbd.mSampleRate }
+      }
+      let out = AVAssetReaderTrackOutput(track: audioTrack, outputSettings: [
+        AVFormatIDKey: kAudioFormatLinearPCM,
+        AVLinearPCMBitDepthKey: 16,
+        AVLinearPCMIsFloatKey: false,
+        AVLinearPCMIsBigEndianKey: false,
+        AVLinearPCMIsNonInterleaved: false,
+        AVNumberOfChannelsKey: channels,
+        AVSampleRateKey: sampleRate,
+      ])
+      out.alwaysCopiesSampleData = false
+      let input = AVAssetWriterInput(mediaType: .audio, outputSettings: [
+        AVFormatIDKey: kAudioFormatMPEG4AAC,
+        AVNumberOfChannelsKey: channels,
+        AVSampleRateKey: sampleRate,
+        AVEncoderBitRateKey: LocalMediaCore.audioBitrate,
+      ])
+      input.expectsMediaDataInRealTime = false
+      if reader.canAdd(out), writer.canAdd(input) {
+        reader.add(out)
+        writer.add(input)
+        audioOut = out
+        audioIn = input
+      } else {
+        audioOut = nil
+        audioIn = nil
+      }
+    } else {
+      audioOut = nil
+      audioIn = nil
+    }
+  }
+
+  func run(progress: ((Double) -> Void)?, completion: @escaping (Error?) -> Void) {
+    guard reader.startReading() else {
+      return completion(LocalMediaError.exportFailed(reader.error?.localizedDescription ?? "读取失败"))
+    }
+    guard writer.startWriting() else {
+      reader.cancelReading()
+      return completion(LocalMediaError.exportFailed(writer.error?.localizedDescription ?? "写入失败"))
+    }
+    writer.startSession(atSourceTime: .zero)
+
+    let group = DispatchGroup()
+    let total = duration.seconds
+    var lastReport = 0.0
+    group.enter()
+    pump(videoOut, into: videoIn, label: "video", done: group.leave) { pts in
+      guard let progress, total > 0 else { return }
+      let p = min(0.99, pts.seconds / total)
+      if p - lastReport >= 0.01 {
+        lastReport = p
+        progress(p)
+      }
+    }
+    if let audioOut, let audioIn {
+      group.enter()
+      pump(audioOut, into: audioIn, label: "audio", done: group.leave)
+    }
+
+    group.notify(queue: .global()) { [self] in
+      if reader.status == .failed || writer.status == .failed {
+        let e = writer.error ?? reader.error
+        reader.cancelReading()
+        writer.cancelWriting()
+        return completion(LocalMediaError.exportFailed(e?.localizedDescription ?? "未知错误"))
+      }
+      writer.finishWriting { [self] in
+        if writer.status == .completed {
+          completion(nil)
+        } else {
+          completion(LocalMediaError.exportFailed(writer.error?.localizedDescription ?? "写入未完成"))
+        }
+      }
+    }
+  }
+
+  private func pump(
+    _ output: AVAssetReaderOutput, into input: AVAssetWriterInput, label: String,
+    done: @escaping () -> Void, onSample: ((CMTime) -> Void)? = nil
+  ) {
+    let queue = DispatchQueue(label: "LocalMedia.export.\(label)")
+    input.requestMediaDataWhenReady(on: queue) { [self] in
+      while input.isReadyForMoreMediaData {
+        guard reader.status == .reading, writer.status == .writing,
+              let sb = output.copyNextSampleBuffer()
+        else {
+          input.markAsFinished()
+          done()
+          return
+        }
+        if !input.append(sb) {
+          // writer 已失败：停读，让另一路也尽快结束
+          reader.cancelReading()
+          input.markAsFinished()
+          done()
+          return
+        }
+        onSample?(CMSampleBufferGetPresentationTimeStamp(sb))
+      }
     }
   }
 }
