@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEvent } from 'expo';
+import { useEvent, useEventListener } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { ChevronLeft, ChevronRight, Minus, Play, Plus, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -30,6 +30,10 @@ function ClipPlayer({ url, offset: clipOffset, label, total }: { url: string; of
   useEffect(() => {
     player.currentTime = Math.max(0, offset);
   }, [player, offset]);
+  // 本地任务播的是整段原视频，加载完再跳一次到片段起点
+  useEventListener(player, 'statusChange', ({ status }) => {
+    if (status === 'readyToPlay' && base) player.currentTime = Math.max(0, offset);
+  });
   return (
     <Pressable
       style={styles.preview}

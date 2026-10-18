@@ -1,3 +1,4 @@
+import { useEventListener } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +12,10 @@ function Player({ url }: { url: string }) {
     p.loop = !offset;
     if (offset) p.currentTime = offset;
     p.play();
+  });
+  // 加载前设置的 currentTime 可能不生效，可以播放时再跳一次
+  useEventListener(player, 'statusChange', ({ status }) => {
+    if (status === 'readyToPlay' && offset && player.currentTime < offset - 0.5) player.currentTime = offset;
   });
   return <VideoView player={player} style={styles.video} nativeControls contentFit="contain" />;
 }

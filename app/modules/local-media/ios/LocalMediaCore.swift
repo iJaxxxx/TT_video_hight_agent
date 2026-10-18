@@ -57,9 +57,12 @@ public enum LocalMediaCore {
     throw LocalMediaError.readerFailed(lastError)
   }
 
+  /// 'apac'。不用 kAudioFormatAPAC：它在 iOS 18 SDK 才有，部署目标是 16.4
+  static let apacFourCC: FourCharCode = 0x6170_6163
+
   static func isAPAC(_ track: AVAssetTrack) -> Bool {
     for case let desc as CMFormatDescription in track.formatDescriptions {
-      if CMFormatDescriptionGetMediaSubType(desc) == kAudioFormatAPAC { return true }
+      if CMFormatDescriptionGetMediaSubType(desc) == apacFourCC { return true }
     }
     return false
   }
