@@ -7,7 +7,7 @@
 | 抽音频：可解码音轨 → 16kHz 单声道 float32 PCM | 原生（AVAssetReader） | `ios/LocalMediaCore.swift`、`ios/Resampler.swift` |
 | 击球检测、回合切分 | JS（Hermes） | `src/lib/local/hits.ts` |
 | 缩略图 | expo-video-thumbnails | `src/lib/local/jobs.ts` |
-| 拼接导出（居中裁切、限制短边） | 原生（AVMutableComposition + AVAssetExportSession，硬件编码） | `ios/LocalMediaCore.swift` |
+| 拼接导出（居中裁切、限制短边） | 原生（AVMutableComposition → AVAssetReader + AVAssetWriter，H.264 硬件编码，码率按像素数×帧率，AAC 128k） | `ios/LocalMediaCore.swift` |
 
 大模型复核、球速估算、球台标定不做，得分方在结果页手动确认。
 
