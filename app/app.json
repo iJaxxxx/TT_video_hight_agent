@@ -52,6 +52,9 @@
       [
         "expo-build-properties",
         {
+          "ios": {
+            "buildReactNativeFromSource": true
+          },
           "android": {
             "usesCleartextTraffic": true
           }
