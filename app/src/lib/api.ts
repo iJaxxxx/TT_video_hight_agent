@@ -54,10 +54,24 @@ export type Candidate = {
   speed?: Speed;
 };
 
+export type ExportRatio = '9:16' | '16:9' | '1:1';
+/** null 为原画 */
+export type ExportQuality = '720p' | '1080p' | null;
+
+export type ExportOptions = {
+  include: Winner[];
+  /** 编辑后的片段，按成片顺序 */
+  clips?: { n: number; start: number; end: number }[];
+  ratio?: ExportRatio | null;
+  quality?: ExportQuality;
+};
+
 export type ExportState = {
   status: 'running' | 'done' | 'failed';
   progress: number;
   include: Winner[];
+  ratio?: ExportRatio | null;
+  quality?: ExportQuality | null;
   clips?: number;
   duration?: number;
   error?: string;
@@ -127,8 +141,8 @@ export const api = {
   deleteJob: (base: string, id: string) => request<{ ok: boolean }>(base, `/jobs/${id}`, { method: 'DELETE' }),
   setWinner: (base: string, id: string, n: number, winner: Winner) =>
     request<Candidate>(base, `/jobs/${id}/candidates/${n}`, json({ winner })),
-  startExport: (base: string, id: string, include: Winner[]) =>
-    request<ExportState>(base, `/jobs/${id}/export`, json({ include })),
+  startExport: (base: string, id: string, opts: ExportOptions) =>
+    request<ExportState>(base, `/jobs/${id}/export`, json(opts)),
   setCalibration: (base: string, id: string, corners: [number, number][], t: number) =>
     request<Calibration>(base, `/jobs/${id}/calibration`, json({ corners, t })),
   clearCalibration: (base: string, id: string) => request<null>(base, `/jobs/${id}/calibration`, { method: 'DELETE' }),

@@ -117,10 +117,27 @@ def make_sheet(video, start, out_path, duration=SHEET_BEFORE_S + SHEET_AFTER_S):
              "-vf", "fps=2,scale=480:-2,tile=3x3", "-frames:v", "1", "-q:v", "4", out_path])
 
 
-def cut_clip(video, start, end, out_path, height=None, crf=20):
-    """精确剪切（重编码）。height 不为空时缩小，用于手机预览。
+RATIOS = {"9:16": (9, 16), "16:9": (16, 9), "1:1": (1, 1)}
+QUALITIES = {"720p": 720, "1080p": 1080}
+
+
+def export_filter(ratio=None, quality=None):
+    """成片的画面比例（居中裁切）和清晰度（短边像素，不放大）。都为空时返回 None，保持原画。
+    用 ffmpeg 表达式而不是 probe 出的宽高，竖拍视频带旋转信息时也对。"""
+    vf = []
+    if ratio in RATIOS:
+        a, b = RATIOS[ratio]
+        vf.append(f"crop=w='trunc(min(iw,ih*{a}/{b})/2)*2':h='trunc(min(ih,iw*{b}/{a})/2)*2'")
+    q = QUALITIES.get(quality)
+    if q:
+        vf.append(f"scale=w='if(gte(iw,ih),-2,min(iw,{q}))':h='if(gte(iw,ih),min(ih,{q}),-2)'")
+    return ",".join(vf) or None
+
+
+def cut_clip(video, start, end, out_path, height=None, crf=20, vf=None):
+    """精确剪切（重编码）。height 不为空时缩小，用于手机预览；vf 为成片的裁切/缩放滤镜。
     显式选音轨：ffmpeg 默认挑声道最多的那条，iPhone 上会选中解不了的 APAC。"""
-    vf = ["-vf", f"scale=-2:{height}"] if height else []
+    vf = ["-vf", vf] if vf else ["-vf", f"scale=-2:{height}"] if height else []
     a = audio_stream(video)
     maps = ["-map", "0:v:0"] + (["-map", f"0:a:{a}"] if a is not None else [])
     _ffmpeg(["-ss", f"{max(0, start):.3f}", "-i", video, "-t", f"{end - start:.3f}"] + maps + vf +
@@ -283,20 +300,27 @@ def preview_path(job_id, n):
     return out
 
 
-def run_export(job_id, include):
-    """把选中的候选分按时间顺序剪出来拼成一条成片。"""
+def run_export(job_id, include, clips=None, ratio=None, quality=None):
+    """把选中的候选分剪出来拼成一条成片。
+    clips 为 App 编辑后的片段（顺序、起止时间）；为空时按 include 里的结果、按时间顺序全选。"""
     try:
         job = store.load(job_id)
         video = store.path(job_id, job["video"])
-        chosen = [c for c in job["candidates"] if c["winner"] in include]
+        if clips:
+            by_n = {c["n"]: c for c in job["candidates"]}
+            chosen = [{"start": max(0.0, c["start"]), "end": c["end"]} for c in clips
+                      if c["n"] in by_n and c["end"] - c["start"] >= 0.3]
+        else:
+            chosen = [c for c in job["candidates"] if c["winner"] in include]
         if not chosen:
             raise ValueError("没有符合条件的片段，请先确认至少一个得分球")
+        vf = export_filter(ratio, quality)
         parts_dir = store.path(job_id, "parts")
         os.makedirs(parts_dir, exist_ok=True)
         parts = []
         for k, c in enumerate(chosen):
             p = os.path.join(parts_dir, f"{k:03d}.mp4")
-            cut_clip(video, c["start"], c["end"], p, crf=18)
+            cut_clip(video, c["start"], c["end"], p, crf=18, vf=vf)
             parts.append(p)
 
             def prog(j, k=k):

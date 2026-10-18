@@ -184,8 +184,18 @@ def calibration_check(job_id: str):
     return FileResponse(p, media_type="image/jpeg")
 
 
+class ExportClip(BaseModel):
+    n: int
+    start: float
+    end: float
+
+
 class ExportReq(BaseModel):
     include: list[str] = ["me"]
+    # App 编辑过的片段（按成片顺序）。不传就按 include 全选
+    clips: list[ExportClip] | None = None
+    ratio: str | None = None  # 9:16 / 16:9 / 1:1，不传为原比例
+    quality: str | None = None  # 720p / 1080p，不传为原画
 
 
 @app.post("/jobs/{job_id}/export")
@@ -195,8 +205,11 @@ def export(job_id: str, req: ExportReq):
         raise HTTPException(409, "处理还没完成")
     if job.get("export") and job["export"].get("status") == "running":
         raise HTTPException(409, "正在导出")
-    store.update(job_id, lambda j: j.update(export={"status": "running", "progress": 0.0, "include": req.include}))
-    threading.Thread(target=pipeline.run_export, args=(job_id, set(req.include)), daemon=True).start()
+    store.update(job_id, lambda j: j.update(export={"status": "running", "progress": 0.0, "include": req.include,
+                                                     "ratio": req.ratio, "quality": req.quality}))
+    clips = [c.model_dump() for c in req.clips] if req.clips else None
+    threading.Thread(target=pipeline.run_export, args=(job_id, set(req.include), clips, req.ratio, req.quality),
+                     daemon=True).start()
     return store.load(job_id)["export"]
 
 
