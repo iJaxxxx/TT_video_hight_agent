@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { File } from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 
 import LocalMedia from '../../../modules/local-media';
@@ -34,6 +34,26 @@ export type LocalJob = Job & {
   };
 };
 
+/**
+ * 记录里存的是绝对路径（file:///var/mobile/Containers/Data/Application/<UUID>/Library/...）。
+ * App 更新重装后 iOS 可能换掉容器 UUID，文件还在、旧路径却失效了，原视频播不了、缩略图也出不来。
+ * 读记录时把旧容器前缀换成当前的。
+ */
+const CONTAINER_RE = /^file:\/\/\/(?:private\/)?var\/mobile\/Containers\/Data\/Application\/[^/]+\//;
+function currentContainer() {
+  const m = Paths.document.uri.match(CONTAINER_RE);
+  return m ? m[0] : null;
+}
+function rebase(uri: string, root: string | null): string {
+  return root && uri ? uri.replace(CONTAINER_RE, root) : uri;
+}
+function rebaseJob(j: LocalJob, root: string | null) {
+  if (j.video) j.video = rebase(j.video, root);
+  j.local.videoUri = rebase(j.local.videoUri, root);
+  if (j.local.clipUri) j.local.clipUri = rebase(j.local.clipUri, root);
+  j.local.thumbs = Object.fromEntries(Object.entries(j.local.thumbs).map(([k, v]) => [k, rebase(v, root)]));
+}
+
 const KEY = 'tt-highlight-local-jobs';
 const jobs = new Map<string, LocalJob>();
 let hydrated: Promise<void> | null = null;
@@ -42,12 +62,15 @@ function hydrate() {
   hydrated ??= AsyncStorage.getItem(KEY)
     .then((raw) => {
       if (!raw) return;
+      const root = currentContainer();
       for (const j of JSON.parse(raw) as LocalJob[]) {
+        rebaseJob(j, root);
         // 上次分析 / 导出到一半 App 被杀了
         if (j.status === 'processing') Object.assign(j, { status: 'failed', error: 'App 退出，本地分析中断了，请重新导入' });
         if (j.export?.status === 'running') j.export = { ...j.export, status: 'failed', error: '导出中断' };
         if (!jobs.has(j.id)) jobs.set(j.id, j);
       }
+      persist();
     })
     .catch(() => {});
   return hydrated;
