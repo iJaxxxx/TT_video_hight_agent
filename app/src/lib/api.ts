@@ -1,6 +1,8 @@
 import { File, UploadType } from 'expo-file-system';
 import { Platform } from 'react-native';
 
+import { isLocalId, localApi } from './local/jobs';
+
 // 与 server/main.py、server/pipeline.py 的数据结构一一对应
 
 export type Winner = 'unknown' | 'me' | 'coach' | 'practice' | 'unclear';
@@ -134,7 +136,7 @@ const json = (body: unknown): RequestInit => ({
   body: JSON.stringify(body),
 });
 
-export const api = {
+const server = {
   health: (base: string) => request<{ ok: boolean; llm_enabled: boolean }>(base, '/health'),
   listJobs: (base: string) => request<JobSummary[]>(base, '/jobs'),
   getJob: (base: string, id: string) => request<Job>(base, `/jobs/${id}`),
@@ -154,6 +156,30 @@ export const api = {
   previewUrl: (base: string, id: string, n: number) => `${base}/jobs/${id}/candidates/${n}/preview.mp4`,
   clipUrl: (base: string, id: string) => `${base}/jobs/${id}/clip.mp4`,
 };
+
+/** 页面统一用这个：id 以 local_ 开头的是本地解析的任务（lib/local/jobs.ts），其余走服务器 */
+export const api = {
+  ...server,
+  getJob: (base: string, id: string) => (isLocalId(id) ? localApi.getJob(id) : server.getJob(base, id)),
+  deleteJob: (base: string, id: string) => (isLocalId(id) ? localApi.deleteJob(id) : server.deleteJob(base, id)),
+  setWinner: (base: string, id: string, n: number, winner: Winner) =>
+    isLocalId(id) ? localApi.setWinner(id, n, winner) : server.setWinner(base, id, n, winner),
+  startExport: (base: string, id: string, opts: ExportOptions) =>
+    isLocalId(id) ? localApi.startExport(id, opts) : server.startExport(base, id, opts),
+  setCalibration: (base: string, id: string, corners: [number, number][], t: number) =>
+    isLocalId(id) ? Promise.reject(new ApiError('本地解析暂不支持球台标定')) : server.setCalibration(base, id, corners, t),
+  clearCalibration: (base: string, id: string) => (isLocalId(id) ? Promise.resolve(null) : server.clearCalibration(base, id)),
+  frameUrl: (base: string, id: string, t: number) => (isLocalId(id) ? localApi.frameUrl(id, t) : server.frameUrl(base, id, t)),
+  sheetUrl: (base: string, id: string, n: number) => (isLocalId(id) ? localApi.sheetUrl(id, n) : server.sheetUrl(base, id, n)),
+  previewUrl: (base: string, id: string, n: number) => (isLocalId(id) ? localApi.previewUrl(id, n) : server.previewUrl(base, id, n)),
+  clipUrl: (base: string, id: string) => (isLocalId(id) ? localApi.clipUrl(id) : server.clipUrl(base, id)),
+};
+
+/** 本地任务的预览直接播原视频，URL 带 #t=起点；服务端的预览是剪好的片段，起点为 0 */
+export function splitPreviewUrl(url: string): { uri: string; offset: number } {
+  const m = url.match(/^(.*)#t=([\d.]+)$/);
+  return m ? { uri: m[1], offset: Number(m[2]) } : { uri: url, offset: 0 };
+}
 
 export type PickedVideo = { uri: string; name: string; mimeType: string; webFile?: Blob };
 

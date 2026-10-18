@@ -11,6 +11,11 @@ async function download(url: string, name: string, onProgress?: (p: number) => v
   });
 }
 
+/** 本地导出的成片已经在手机上，不用下载 */
+async function localOrDownload(url: string, name: string, onProgress?: (p: number) => void) {
+  return url.startsWith('file://') ? new File(url) : download(url, name, onProgress);
+}
+
 export async function saveClipToLibrary(url: string, name: string, onProgress?: (p: number) => void) {
   if (Platform.OS === 'web') {
     Linking.openURL(url);
@@ -18,7 +23,7 @@ export async function saveClipToLibrary(url: string, name: string, onProgress?: 
   }
   const perm = await MediaLibrary.requestPermissionsAsync(true);
   if (!perm.granted) throw new Error('没有相册写入权限。请在系统设置里允许「乒乓高光」访问照片。');
-  const file = await download(url, name, onProgress);
+  const file = await localOrDownload(url, name, onProgress);
   await MediaLibrary.Asset.create(file.uri);
 }
 
@@ -28,6 +33,6 @@ export async function shareClip(url: string, name: string, onProgress?: (p: numb
     return;
   }
   if (!(await Sharing.isAvailableAsync())) throw new Error('这台设备不支持系统分享');
-  const file = await download(url, name, onProgress);
+  const file = await localOrDownload(url, name, onProgress);
   await Sharing.shareAsync(file.uri, { mimeType: 'video/mp4', UTI: 'public.mpeg-4', dialogTitle: '分享高光集锦' });
 }

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button, MonoText, Screen, TopBar } from '../../components/ui';
-import { api, fmtTime, type Candidate, type Job } from '../../lib/api';
+import { api, fmtTime, splitPreviewUrl, type Candidate, type Job } from '../../lib/api';
 import { clipsDuration, fmtClock, setDraft, useDraft, type ClipEdit } from '../../lib/draft';
 import { useSettings } from '../../lib/settings';
 import { colors as c } from '../../lib/theme';
@@ -18,9 +18,12 @@ const MIN_LEN = 1;
 const CLIP_TONES = ['#39252e', '#25252a', '#49303b', '#2e2a33'];
 
 /** 当前片段的预览：服务端按回合切好的 720p 预览，从裁剪后的开头播起 */
-function ClipPlayer({ url, offset, label, total }: { url: string; offset: number; label: string; total: string }) {
-  const player = useVideoPlayer(url, (p) => {
-    p.loop = true;
+function ClipPlayer({ url, offset: clipOffset, label, total }: { url: string; offset: number; label: string; total: string }) {
+  // 本地任务播的是原视频，起点要加上回合在原视频里的位置
+  const { uri, offset: base } = splitPreviewUrl(url);
+  const offset = base + clipOffset;
+  const player = useVideoPlayer(uri, (p) => {
+    p.loop = !base;
     p.currentTime = Math.max(0, offset);
   });
   const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });

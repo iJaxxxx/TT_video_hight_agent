@@ -6,6 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button, Eyebrow, H1, ProgressBar, Screen, TopBar } from '../components/ui';
 import { ApiError, uploadVideo, type MeSide } from '../lib/api';
+import { createLocalJob } from '../lib/local/jobs';
 import { fmtClock, getPendingVideo, setPendingVideo } from '../lib/draft';
 import { useSettings } from '../lib/settings';
 import { colors as c } from '../lib/theme';
@@ -47,7 +48,7 @@ function CourtPreview({ uri, duration, selected, onSelect }: { uri: string; dura
 }
 
 export default function ImportScreen() {
-  const { serverUrl, meSide, update } = useSettings();
+  const { serverUrl, meSide, localMode, update } = useSettings();
   const [video] = useState(getPendingVideo);
   const [side, setSide] = useState<MeSide>(meSide);
   const [upload, setUpload] = useState<number | null>(null);
@@ -68,11 +69,12 @@ export default function ImportScreen() {
     setUpload(0);
     update({ meSide: side });
     try {
-      const job = await uploadVideo(serverUrl, video, { me_side: side, min_hits: 2 }, setUpload);
+      const params = { me_side: side, min_hits: 2 };
+      const job = localMode ? await createLocalJob(video, params) : await uploadVideo(serverUrl, video, params, setUpload);
       setPendingVideo(null);
       router.replace({ pathname: '/job/[id]', params: { id: job.id, fresh: '1' } });
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : `上传失败：${String(e)}`);
+      setError(e instanceof ApiError || localMode ? (e instanceof Error ? e.message : String(e)) : `上传失败：${String(e)}`);
       setUpload(null);
     }
   };
@@ -118,7 +120,11 @@ export default function ImportScreen() {
         )}
         {error && <Text style={styles.error}>{error}</Text>}
         <Text style={styles.note}>
-          {upload === null ? '分析约需 3–5 分钟，可在后台继续运行' : '长视频文件较大，上传时请保持 App 在前台'}
+          {localMode
+            ? '本地解析（测试）：视频不上传，分析时请保持 App 在前台'
+            : upload === null
+              ? '分析约需 3–5 分钟，可在后台继续运行'
+              : '长视频文件较大，上传时请保持 App 在前台'}
         </Text>
       </ScrollView>
     </Screen>

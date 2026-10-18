@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
-import { Brain, ChevronRight, HelpCircle, Server, UserRound } from 'lucide-react-native';
+import { Brain, ChevronRight, HelpCircle, Server, Smartphone, UserRound } from 'lucide-react-native';
 import { useState, type ComponentType } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { isBusy, useServerJobs } from '../../components/ProjectRow';
 import { Eyebrow, H1, MonoText, Screen, Sheet } from '../../components/ui';
 import type { MeSide } from '../../lib/api';
+import { localAvailable } from '../../lib/local/jobs';
 import { useSettings } from '../../lib/settings';
 import { colors as c } from '../../lib/theme';
 
@@ -64,7 +65,8 @@ function SideToggle({ value, onChange }: { value: MeSide; onChange: (v: MeSide) 
 }
 
 export default function Profile() {
-  const { serverUrl, meSide, update } = useSettings();
+  const { serverUrl, meSide, localMode, update } = useSettings();
+  const canLocal = localAvailable();
   const { health, jobs } = useServerJobs();
   const [help, setHelp] = useState(false);
   const list = jobs ?? [];
@@ -137,6 +139,26 @@ export default function Profile() {
           />
           <View style={styles.sep} />
           <Row Icon={Server} title="服务器地址" detail={serverUrl} onPress={() => router.push('/settings')} />
+          <View style={styles.sep} />
+          <Row
+            Icon={Smartphone}
+            title="本地解析（测试）"
+            detail={
+              !canLocal
+                ? '需要 iOS 开发版（npx expo run:ios），Expo Go 里不可用'
+                : localMode
+                  ? '已开启：视频不上传，在手机上找回合、导出'
+                  : '关闭：视频上传到服务器分析'
+            }
+            right={
+              <Switch
+                value={localMode && canLocal}
+                disabled={!canLocal}
+                onValueChange={(v) => update({ localMode: v })}
+                accessibilityLabel="本地解析（测试）"
+              />
+            }
+          />
           <View style={styles.sep} />
           <Row Icon={HelpCircle} title="帮助" detail="拍摄与剪辑指南" onPress={() => setHelp(true)} />
         </View>

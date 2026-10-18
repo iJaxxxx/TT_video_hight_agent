@@ -2,10 +2,14 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-/** 单个候选分的 720p 预览。服务端第一次请求时才剪，可能要等一两秒。 */
+import { splitPreviewUrl } from '../lib/api';
+
+/** 单个候选分的 720p 预览。服务端第一次请求时才剪，可能要等一两秒。本地任务直接从原视频的回合起点播 */
 function Player({ url }: { url: string }) {
-  const player = useVideoPlayer(url, (p) => {
-    p.loop = true;
+  const { uri, offset } = splitPreviewUrl(url);
+  const player = useVideoPlayer(uri, (p) => {
+    p.loop = !offset;
+    if (offset) p.currentTime = offset;
     p.play();
   });
   return <VideoView player={player} style={styles.video} nativeControls contentFit="contain" />;

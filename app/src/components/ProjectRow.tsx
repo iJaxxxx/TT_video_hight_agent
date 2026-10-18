@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { api, type JobSummary } from '../lib/api';
+import { localApi } from '../lib/local/jobs';
 import { useSettings } from '../lib/settings';
 import { colors as c } from '../lib/theme';
 import { MonoText, ProjectThumb, type ThumbTone } from './ui';
@@ -18,12 +19,16 @@ export function useServerJobs() {
 
   const refresh = useCallback(async () => {
     if (!ready) return;
+    // 本地解析的项目和服务器上的合在一起，按时间倒序；服务器连不上时也能看到本地项目
+    const local = await localApi.listJobs();
+    const merge = (remote: JobSummary[]) => [...local, ...remote].sort((a, b) => b.created - a.created);
     try {
       const h = await api.health(serverUrl);
       setHealth({ state: 'ok', llm: h.llm_enabled });
-      setJobs(await api.listJobs(serverUrl));
+      setJobs(merge(await api.listJobs(serverUrl)));
     } catch (e) {
       setHealth({ state: 'error', message: e instanceof Error ? e.message : String(e) });
+      if (local.length) setJobs(merge([]));
     }
   }, [serverUrl, ready]);
 

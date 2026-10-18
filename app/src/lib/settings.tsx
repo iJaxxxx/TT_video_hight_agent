@@ -12,6 +12,8 @@ export type Settings = {
   meSide: MeSide;
   /** 上一次确认过的球台角点（0–1 相对坐标）。机位不变时新视频可以直接沿用 */
   lastCorners: [number, number][] | null;
+  /** 实验开关：本地解析（不上传，见 lib/local/jobs.ts） */
+  localMode: boolean;
 };
 
 /**
@@ -23,7 +25,7 @@ function defaultServerUrl() {
   return `http://${host || 'localhost'}:${SERVER_PORT}`;
 }
 
-const defaults: Settings = { serverUrl: defaultServerUrl(), meSide: 'far', lastCorners: null };
+const defaults: Settings = { serverUrl: defaultServerUrl(), meSide: 'far', lastCorners: null, localMode: false };
 
 type Ctx = Settings & { ready: boolean; update: (patch: Partial<Settings>) => void };
 const SettingsContext = createContext<Ctx>({ ...defaults, ready: false, update: () => {} });

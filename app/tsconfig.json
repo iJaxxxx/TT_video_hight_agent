@@ -2,5 +2,7 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true
-  }
+  },
+  // scripts/ 是 Node 脚本（node --experimental-strip-types 直接跑），不进 App 的类型检查
+  "exclude": ["node_modules", "scripts"]
 }

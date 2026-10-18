@@ -7,6 +7,7 @@ import { Button, Eyebrow, H1, MonoText, ProgressBar, Screen, TopBar } from '../.
 import { api, ApiError, type ExportQuality, type ExportRatio, type Job } from '../../lib/api';
 import { saveClipToLibrary, shareClip } from '../../lib/clipFile';
 import { clipsDuration, fmtClock, useDraft } from '../../lib/draft';
+import { localTimings } from '../../lib/local/jobs';
 import { useSettings } from '../../lib/settings';
 import { colors as c } from '../../lib/theme';
 
@@ -132,6 +133,11 @@ export default function ExportScreen() {
               {exp.clips} 个片段，时长 {fmtClock(exp.duration ?? total)}，{quality ?? '原画'} · {ratio}。
               {saved ? '已保存到相册。' : ''}
             </Text>
+            {job && localTimings(job)?.export !== undefined && (
+              <Text style={[styles.successText, { marginTop: 6, fontSize: 11, color: '#636368' }]}>
+                本地导出耗时 {localTimings(job)!.export!.toFixed(1)}s
+              </Text>
+            )}
           </View>
           <View style={styles.grid}>
             <ShareTile Icon={saved ? Check : ImageDown} label={saved ? '已保存' : '存到相册'} onPress={() => run('save')} busy={busy?.kind === 'save' ? busy.p : undefined} />

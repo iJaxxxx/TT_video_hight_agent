@@ -9,6 +9,7 @@ import { jobTitle } from '../../components/ProjectRow';
 import { Button, Eyebrow, H1, IconButton, MonoText, ProgressBar, Screen, Sheet, TopBar } from '../../components/ui';
 import { api, ApiError, CONFIDENCE_LABEL, fmtTime, WINNER_LABEL, type Candidate, type Job, type Winner } from '../../lib/api';
 import { clipsDuration, ensureDraft, fmtClock, toggleClip, useDraft } from '../../lib/draft';
+import { isLocalId, localTimings } from '../../lib/local/jobs';
 import { useSettings } from '../../lib/settings';
 import { colors as c, mono, winnerColor } from '../../lib/theme';
 
@@ -250,6 +251,7 @@ function ResultsView({ job, reload }: { job: Job; reload: () => void }) {
   };
 
   const total = clipsDuration(draft.clips);
+  const timings = localTimings(job);
   const f = job.fastest;
   const speedsRunning = job.speeds?.status === 'running';
 
@@ -267,8 +269,16 @@ function ResultsView({ job, reload }: { job: Job; reload: () => void }) {
           <Text style={styles.summaryText}>
             {job.llm.enabled
               ? `已自动选择你的 ${counts.mine} 个得分片段`
-              : '未配置大模型：点每个回合右上角的标签，确认是谁得分'}
+              : isLocalId(id)
+                ? '本地解析（测试）：点每个回合右上角的标签，确认是谁得分'
+                : '未配置大模型：点每个回合右上角的标签，确认是谁得分'}
           </Text>
+          {timings?.total !== undefined && (
+            <Text style={styles.timing}>
+              本地耗时 {timings.total.toFixed(1)}s（音频 {timings.audio?.toFixed(1)}s · 检测 {timings.detect?.toFixed(1)}s · 缩略图{' '}
+              {timings.thumbs?.toFixed(1)}s），视频 {fmtClock(job.meta?.duration ?? 0)}，{job.hits} 次击球
+            </Text>
+          )}
         </View>
         <View style={{ alignItems: 'flex-end', gap: 3 }}>
           <Text style={{ color: '#6f6f75', fontSize: 10 }}>我的得分</Text>
@@ -401,20 +411,22 @@ function ResultsView({ job, reload }: { job: Job; reload: () => void }) {
 
       <Sheet visible={more} onClose={() => setMore(false)}>
         <Text style={styles.sheetTitle}>{jobTitle(job.filename)}</Text>
-        <Pressable
-          style={styles.sheetRow}
-          onPress={() => (setMore(false), router.push({ pathname: '/calibrate/[id]', params: { id } }))}
-        >
-          <Crosshair size={19} strokeWidth={1.75} color={c.fg2} />
-          <View style={{ flex: 1, gap: 3 }}>
-            <Text style={styles.sheetRowTitle}>{job.calibration ? '重新标定球台' : '球台标定'}</Text>
-            <Text style={styles.sheetRowSub}>
-              {job.calibration ? '已标定，用于估算出手球速' : '点一次球台四个角，就能估算每一分的出手球速'}
-            </Text>
-          </View>
-          <ChevronRight size={18} strokeWidth={1.75} color="#5e5e63" />
-        </Pressable>
-        {!job.calibration && lastCorners && (
+        {!isLocalId(id) && (
+          <Pressable
+            style={styles.sheetRow}
+            onPress={() => (setMore(false), router.push({ pathname: '/calibrate/[id]', params: { id } }))}
+          >
+            <Crosshair size={19} strokeWidth={1.75} color={c.fg2} />
+            <View style={{ flex: 1, gap: 3 }}>
+              <Text style={styles.sheetRowTitle}>{job.calibration ? '重新标定球台' : '球台标定'}</Text>
+              <Text style={styles.sheetRowSub}>
+                {job.calibration ? '已标定，用于估算出手球速' : '点一次球台四个角，就能估算每一分的出手球速'}
+              </Text>
+            </View>
+            <ChevronRight size={18} strokeWidth={1.75} color="#5e5e63" />
+          </Pressable>
+        )}
+        {!isLocalId(id) && !job.calibration && lastCorners && (
           <Pressable style={styles.sheetRow} onPress={reuseCalibration}>
             <Crosshair size={19} strokeWidth={1.75} color={c.accent} />
             <View style={{ flex: 1, gap: 3 }}>
@@ -531,6 +543,7 @@ const styles = StyleSheet.create({
   resultSummary: { marginTop: 13, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 },
   success: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 10 },
   summaryText: { marginTop: 7, color: '#85858b', fontSize: 12, lineHeight: 17 },
+  timing: { marginTop: 6, color: '#636368', fontSize: 10, lineHeight: 15 },
   fastest: { marginTop: 18, padding: 13, borderRadius: 16, backgroundColor: c.ballBg, flexDirection: 'row', alignItems: 'center', gap: 10 },
   filterRow: { marginTop: 22, flexDirection: 'row', alignItems: 'center', gap: 7 },
   filterTabs: { flex: 1, height: 42, padding: 3, flexDirection: 'row', borderRadius: 13, backgroundColor: c.surface2 },
