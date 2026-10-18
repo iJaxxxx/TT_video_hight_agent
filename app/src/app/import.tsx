@@ -142,7 +142,7 @@ export default function ImportScreen() {
           />
         ) : (
           <View style={{ marginTop: 28, gap: 10 }}>
-            <Button title={`上传中 ${Math.round(upload * 100)}%`} onPress={() => {}} disabled />
+            <Button title={localMode ? '准备中…' : `上传中 ${Math.round(upload * 100)}%`} onPress={() => {}} disabled />
             <ProgressBar value={upload} />
           </View>
         )}
