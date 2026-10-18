@@ -1,12 +1,13 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Card, MonoText, ProgressBar } from '../../components/ui';
 import { api, fmtSpeed, type Job } from '../../lib/api';
 import { saveClipToLibrary } from '../../lib/clipFile';
+import { isLocalId, localMissing } from '../../lib/local/jobs';
 import { useSettings } from '../../lib/settings';
 import { colors as c } from '../../lib/theme';
 
@@ -37,6 +38,20 @@ export default function ResultScreen() {
   };
 
   const exp = job?.export;
+  // 本地成片文件不在了（被删 / 被系统清理），播放器只会黑屏，直接说清楚
+  const gone = isLocalId(id) && !!job && (!url || !!localMissing(job)?.clip);
+  if (gone) {
+    return (
+      <View style={[styles.page, { flex: 1, justifyContent: 'center', backgroundColor: c.bg }]}>
+        <Text style={{ color: c.fg, fontSize: 16, fontWeight: '700', textAlign: 'center' }}>成片文件找不到了</Text>
+        <Text style={{ color: c.muted, fontSize: 13, lineHeight: 19, textAlign: 'center' }}>
+          {localMissing(job)?.video
+            ? '原视频也已经不在手机上（可能是存储空间紧张时被系统清理），请删除这个项目后重新导入。'
+            : '可能被系统清理了。原视频还在，回到项目重新导出一次就好。'}
+        </Text>
+      </View>
+    );
+  }
   return (
     <ScrollView contentContainerStyle={[styles.page, { paddingBottom: 20 + insets.bottom }]} style={{ backgroundColor: c.bg }}>
       <VideoView player={player} style={styles.video} nativeControls contentFit="contain" allowsPictureInPicture={false} />

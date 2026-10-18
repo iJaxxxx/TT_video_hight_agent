@@ -1,12 +1,12 @@
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Check, Sparkles, UserRound, Video } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button, Eyebrow, H1, ProgressBar, Screen, TopBar } from '../components/ui';
 import { ApiError, uploadVideo, type MeSide } from '../lib/api';
-import { createLocalJob, localAvailable } from '../lib/local/jobs';
+import { createLocalJob, discardPickedCopy, localAvailable } from '../lib/local/jobs';
 import { fmtClock, getPendingVideo, setPendingVideo } from '../lib/draft';
 import { useSettings } from '../lib/settings';
 import { colors as c } from '../lib/theme';
@@ -56,6 +56,19 @@ export default function ImportScreen() {
   /** 连不上服务器、而手机支持本地解析时，在错误下面给一个切换按钮 */
   const [offerLocal, setOfferLocal] = useState(false);
   const localRun = localMode && localAvailable();
+  const navigation = useNavigation();
+  const starting = useRef(false);
+
+  // 没开始分析就退出了：ImagePicker 复制到缓存里的那份没用了（一个视频就是几 GB）
+  // 用 removed（页面真正被移除后才触发），StrictMode 下 effect 重跑不会误删
+  useEffect(() => {
+    const off = navigation.addListener('removed', () => {
+      if (!video || starting.current || getPendingVideo() !== video) return;
+      setPendingVideo(null);
+      discardPickedCopy(video.uri);
+    });
+    return () => queueMicrotask(off);
+  }, [navigation, video]);
 
   if (!video) {
     // 直接打开了这个页面（比如网页刷新），回首页重新选
@@ -72,10 +85,13 @@ export default function ImportScreen() {
     setOfferLocal(false);
     setUpload(0);
     update({ meSide: side });
+    starting.current = true;
     try {
       const params = { me_side: side, min_hits: 2 };
       const job = localRun ? await createLocalJob(video, params) : await uploadVideo(serverUrl, video, params, setUpload);
       setPendingVideo(null);
+      // 传到服务器了，手机上的副本不用留（本地解析的已经移走了）
+      if (!localRun) discardPickedCopy(video.uri);
       router.replace({ pathname: '/job/[id]', params: { id: job.id, fresh: '1' } });
     } catch (e) {
       if (localRun || e instanceof ApiError) {
@@ -87,6 +103,7 @@ export default function ImportScreen() {
         setError(`上传失败：${String(e)}`);
       }
       setUpload(null);
+      starting.current = false;
     }
   };
 

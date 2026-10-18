@@ -13,6 +13,8 @@ declare class LocalMediaModule extends NativeModule<{ onProgress: (e: ProgressEv
     ratio: '9:16' | '16:9' | '1:1' | null,
     quality: '720p' | '1080p' | null,
   ): Promise<{ uri: string; duration: number; seconds: number }>;
+  /** 移到 Library/Application Support/LocalMedia/（不会被系统清理、不进 iCloud 备份），返回新路径 */
+  persistFile(uri: string): Promise<string>;
 }
 
 /** Expo Go、网页和 Android 上没有这个原生模块（需要 iOS dev build），此时为 null */

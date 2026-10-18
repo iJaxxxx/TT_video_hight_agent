@@ -11,6 +11,15 @@
 
 大模型复核、球速估算、球台标定不做，得分方在结果页手动确认。
 
+## 文件放在哪
+
+- 原视频：选中后 expo-image-picker 复制到 `Library/Caches/ImagePicker/`。建项目时用原生 `persistFile` 移到
+  `Library/Application Support/LocalMedia/`（同一个卷内改名，不复制；目录排除 iCloud 备份），缓存目录在存储紧张时会被 iOS 清掉。
+- 成片：导出到 `Library/Caches/LocalMedia/`，完成后同样移到 `Application Support/LocalMedia/`。缩略图留在缓存里，丢了只是不显示。
+- 启动后第一次读记录时（`jobs.ts` 的 `tidyFiles`）：把老项目还在缓存里的原视频 / 成片挪过去，再删掉
+  `Caches/ImagePicker`、`Caches/LocalMedia` 里不属于任何项目的文件（导入页上正在用的那个除外）。
+- 删除项目时原视频、缩略图、成片一起删。文件已经不在时，结果页 / 成片页给出提示。
+
 ## 和服务端对齐的细节
 
 - 音轨：跳过 iPhone 的 APAC 空间音频轨，选第一条能解码的；`startReading` 失败也换下一条。

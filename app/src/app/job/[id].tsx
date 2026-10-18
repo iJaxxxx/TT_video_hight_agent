@@ -9,7 +9,7 @@ import { jobTitle } from '../../components/ProjectRow';
 import { Button, Eyebrow, H1, IconButton, MonoText, ProgressBar, Screen, Sheet, TopBar } from '../../components/ui';
 import { api, ApiError, CONFIDENCE_LABEL, fmtTime, WINNER_LABEL, type Candidate, type Job, type Winner } from '../../lib/api';
 import { clipsDuration, ensureDraft, fmtClock, toggleClip, useDraft } from '../../lib/draft';
-import { isLocalId, localTimings } from '../../lib/local/jobs';
+import { isLocalId, localMissing, localTimings } from '../../lib/local/jobs';
 import { useSettings } from '../../lib/settings';
 import { colors as c, mono, winnerColor } from '../../lib/theme';
 
@@ -252,6 +252,7 @@ function ResultsView({ job, reload }: { job: Job; reload: () => void }) {
 
   const total = clipsDuration(draft.clips);
   const timings = localTimings(job);
+  const missing = localMissing(job);
   const f = job.fastest;
   const speedsRunning = job.speeds?.status === 'running';
 
@@ -322,6 +323,11 @@ function ResultsView({ job, reload }: { job: Job; reload: () => void }) {
         </View>
       </View>
       {error && <Text style={{ color: c.danger, fontSize: 12, marginTop: 10 }}>{error}</Text>}
+      {missing?.video && (
+        <Text style={styles.missing}>
+          原视频已经不在手机上了（可能是存储空间紧张时被系统清理），回合预览和导出都用不了。请删除这个项目，重新导入视频。
+        </Text>
+      )}
     </View>
   );
 
@@ -518,6 +524,7 @@ export default function JobScreen() {
 }
 
 const styles = StyleSheet.create({
+  missing: { marginTop: 12, padding: 12, borderRadius: 12, color: c.danger, fontSize: 12, lineHeight: 18, backgroundColor: 'rgba(255,69,58,0.1)' },
   page: { paddingHorizontal: 20, paddingBottom: 32 },
   hero: { paddingTop: 38, alignItems: 'center' },
   orbit: {

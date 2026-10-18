@@ -52,6 +52,28 @@ public class LocalMediaModule: Module {
         }
       }
     }
+
+    /// 把文件移到 Library/Application Support/LocalMedia/：缓存目录在存储紧张时会被 iOS 清掉。
+    /// 同一个卷内 moveItem 只是改名，不复制；目录排除 iCloud 备份（视频动辄几 GB）。已经在里面的原样返回
+    AsyncFunction("persistFile") { (uri: URL) -> String in
+      let dir = try FileManager.default
+        .url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        .appendingPathComponent("LocalMedia", isDirectory: true)
+      try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+      var dirURL = dir
+      var values = URLResourceValues()
+      values.isExcludedFromBackup = true
+      try dirURL.setResourceValues(values)
+      if uri.standardizedFileURL.deletingLastPathComponent().resolvingSymlinksInPath().path
+        == dir.resolvingSymlinksInPath().path {
+        return uri.absoluteString
+      }
+      // 保留扩展名，AVFoundation 靠它判断格式
+      let ext = uri.pathExtension.isEmpty ? "mov" : uri.pathExtension
+      let out = dir.appendingPathComponent("\(UUID().uuidString).\(ext)")
+      try FileManager.default.moveItem(at: uri, to: out)
+      return out.absoluteString
+    }
   }
 
   private func cacheFile(ext: String) -> URL {

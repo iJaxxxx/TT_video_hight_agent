@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { File, Paths } from 'expo-file-system';
+import { Directory, File, Paths } from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 
 import LocalMedia from '../../../modules/local-media';
+import { getPendingVideo } from '../draft';
 import type { Candidate, ExportOptions, ExportState, Job, JobSummary, MeSide, PickedVideo, Winner } from '../api';
 import { detectHitsAsync, groupRallies } from './hits';
 
@@ -60,20 +61,105 @@ let hydrated: Promise<void> | null = null;
 
 function hydrate() {
   hydrated ??= AsyncStorage.getItem(KEY)
-    .then((raw) => {
-      if (!raw) return;
+    .then(async (raw) => {
       const root = currentContainer();
-      for (const j of JSON.parse(raw) as LocalJob[]) {
+      for (const j of raw ? (JSON.parse(raw) as LocalJob[]) : []) {
         rebaseJob(j, root);
         // 上次分析 / 导出到一半 App 被杀了
         if (j.status === 'processing') Object.assign(j, { status: 'failed', error: 'App 退出，本地分析中断了，请重新导入' });
         if (j.export?.status === 'running') j.export = { ...j.export, status: 'failed', error: '导出中断' };
         if (!jobs.has(j.id)) jobs.set(j.id, j);
       }
+      // 文件整理出错不能连累任务列表
+      try {
+        await tidyFiles();
+      } catch (e) {
+        console.warn('[local] 整理文件失败', e);
+      }
       persist();
     })
     .catch(() => {});
   return hydrated;
+}
+
+// ———————————————————— 文件 ————————————————————
+// 原视频和成片放在 Library/Application Support/LocalMedia/（原生 persistFile），缩略图留在缓存里，丢了只是不显示。
+
+const fileName = (uri: string) => decodeURIComponent(uri.split(/[?#]/)[0].split('/').pop() ?? '');
+const inCaches = (uri: string) => decodeURIComponent(uri).includes('/Library/Caches/');
+function exists(uri: string | undefined) {
+  try {
+    return !!uri && new File(uri).exists;
+  } catch {
+    return false;
+  }
+}
+function remove(uri: string | undefined) {
+  try {
+    if (uri) new File(uri).delete();
+  } catch {}
+}
+
+/**
+ * 启动后第一次读记录时：
+ * 1. 以前的项目原视频直接用的 ImagePicker 在缓存里的副本，挪到 Application Support；成片同理
+ * 2. 删掉 Caches/ImagePicker 里不属于任何项目的副本（导入失败 / 取消 / 上传到服务器后留下的，一个就是几 GB）
+ * 3. 删掉 Caches/LocalMedia 里没人引用的成片和 PCM（重新导出替换掉的、导出到一半被杀的）
+ * 正在导入页上的视频（还没建项目）不能删。
+ */
+async function tidyFiles() {
+  if (!LocalMedia) return;
+  for (const id of [...jobs.keys()]) {
+    const { videoUri, clipUri } = jobs.get(id)!.local;
+    try {
+      if (inCaches(videoUri) && exists(videoUri)) {
+        const v = await LocalMedia.persistFile(videoUri);
+        patch(id, (j) => {
+          j.video = v;
+          j.local.videoUri = v;
+        });
+      }
+      if (clipUri && inCaches(clipUri) && exists(clipUri)) {
+        const v = await LocalMedia.persistFile(clipUri);
+        patch(id, (j) => {
+          j.local.clipUri = v;
+        });
+      }
+    } catch (e) {
+      console.warn(`[local] ${id} 移动文件失败`, e);
+    }
+  }
+
+  const keep = new Set<string>();
+  for (const j of jobs.values()) {
+    keep.add(fileName(j.local.videoUri));
+    if (j.local.clipUri) keep.add(fileName(j.local.clipUri));
+  }
+  const pending = getPendingVideo();
+  if (pending) keep.add(fileName(pending.uri));
+  for (const name of ['ImagePicker', 'LocalMedia']) {
+    const dir = new Directory(Paths.cache, name);
+    if (!dir.exists) continue;
+    for (const f of dir.list()) {
+      if (keep.has(fileName(f.uri))) continue;
+      try {
+        f.delete();
+        console.log(`[local] 删除无主文件 ${name}/${fileName(f.uri)}`);
+      } catch {}
+    }
+  }
+}
+
+/** 选了视频又没导入（换一个 / 退出导入页 / 上传到服务器后），删掉 ImagePicker 复制到缓存里的那份 */
+export function discardPickedCopy(uri: string) {
+  if (decodeURIComponent(uri).includes('/Library/Caches/ImagePicker/')) remove(uri);
+}
+
+/** 本地任务的原视频 / 成片还在不在：缓存时代的项目可能被系统清掉了 */
+export function localMissing(job: Job) {
+  const l = (job as Partial<LocalJob>).local;
+  if (!l) return null;
+  return { video: !exists(l.videoUri), clip: !!l.clipUri && !exists(l.clipUri) };
 }
 
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -116,6 +202,13 @@ function onNativeProgress(task: 'audio' | 'export', fn: (p: number) => void) {
 export async function createLocalJob(video: PickedVideo, params: { me_side: MeSide; min_hits: number }): Promise<Job> {
   if (!LocalMedia) throw new Error('本地解析需要 iOS 开发版（npx expo run:ios），Expo Go 里没有原生模块');
   await hydrate();
+  // ImagePicker 的副本在 Caches 里，存储紧张时会被系统清掉；同一个卷内移动，不复制
+  let videoUri = video.uri;
+  try {
+    videoUri = await LocalMedia.persistFile(video.uri);
+  } catch (e) {
+    console.warn('[local] 移动原视频失败，先用原路径', e);
+  }
   const id = `${LOCAL_PREFIX}${Date.now().toString(36)}`;
   const job: LocalJob = {
     id,
@@ -127,14 +220,14 @@ export async function createLocalJob(video: PickedVideo, params: { me_side: MeSi
     progress: 0,
     error: null,
     params,
-    video: video.uri,
+    video: videoUri,
     hits: 0,
     candidates: [],
     llm: { enabled: false },
     export: null,
     calibration: null,
     speeds: null,
-    local: { videoUri: video.uri, thumbs: {}, timings: {} },
+    local: { videoUri, thumbs: {}, timings: {} },
   };
   jobs.set(id, job);
   persist();
@@ -232,11 +325,8 @@ export const localApi = {
   async deleteJob(id: string) {
     await hydrate();
     const j = jobs.get(id);
-    for (const uri of [...Object.values(j?.local.thumbs ?? {}), j?.local.clipUri]) {
-      try {
-        if (uri) new File(uri).delete();
-      } catch {}
-    }
+    // 原视频（几 GB）、缩略图、成片一起删
+    for (const uri of [j?.local.videoUri, ...Object.values(j?.local.thumbs ?? {}), j?.local.clipUri]) remove(uri);
     jobs.delete(id);
     persist();
     return { ok: true };
@@ -255,6 +345,7 @@ export const localApi = {
     const j = jobs.get(id);
     if (!j) throw new Error('本地任务不存在');
     if (!LocalMedia) throw new Error('本地导出需要 iOS 开发版');
+    if (!exists(j.local.videoUri)) throw new Error('原视频已经不在手机上了（可能被系统清理），没法导出，请删除这个项目后重新导入');
     const clips = opts.clips ?? j.candidates.filter((c) => opts.include.includes(c.winner)).map(({ start, end }) => ({ start, end }));
     if (!clips.length) throw new Error('没有选中的片段');
     const state: ExportState = { status: 'running', progress: 0, include: opts.include, ratio: opts.ratio, quality: opts.quality, clips: clips.length };
@@ -263,7 +354,11 @@ export const localApi = {
     const old = j.local.clipUri;
     const off = onNativeProgress('export', (p) => patch(id, (x) => x.export && (x.export = { ...x.export, progress: p })));
     const t0 = Date.now();
-    LocalMedia.exportClips(j.local.videoUri, clips.map(({ start, end }) => ({ start, end })), opts.ratio ?? null, opts.quality ?? null)
+    const native = LocalMedia;
+    native
+      .exportClips(j.local.videoUri, clips.map(({ start, end }) => ({ start, end })), opts.ratio ?? null, opts.quality ?? null)
+      // 成片也挪出缓存
+      .then(async (r) => ({ ...r, uri: await native.persistFile(r.uri).catch(() => r.uri) }))
       .then((r) => {
         patch(id, (x) => {
           x.export = { ...state, status: 'done', progress: 1, duration: Math.round(r.duration * 10) / 10 };
@@ -272,9 +367,7 @@ export const localApi = {
           x.local.timings.exportDuration = r.duration;
         });
         console.log(`[local] ${id} 导出 ${r.duration.toFixed(1)}s 成片，耗时 ${((Date.now() - t0) / 1000).toFixed(1)}s`);
-        try {
-          if (old) new File(old).delete();
-        } catch {}
+        if (old !== r.uri) remove(old);
       })
       .catch((e) => patch(id, { export: { ...state, status: 'failed', error: e instanceof Error ? e.message : String(e) } }))
       .finally(off);
