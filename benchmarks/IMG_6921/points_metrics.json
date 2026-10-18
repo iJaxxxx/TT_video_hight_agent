@@ -1,0 +1,521 @@
+{
+ "points": [
+  {
+   "point": "P01",
+   "start": 2.75,
+   "end": 10.75,
+   "sheet": "P01_002.8-010.8.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "medium",
+   "evidence": "9.75 student forehand; 10.00 ball bounces on coach's half near the net (left side); coach makes no attempt, 10.50-10.75 both relax.",
+   "source": "A",
+   "ttcut_events": [
+    [
+     3.785,
+     "near_net_or_air"
+    ],
+    [
+     5.953,
+     "student_racket"
+    ],
+    [
+     6.42,
+     "near_net_or_air"
+    ],
+    [
+     6.953,
+     "student_racket"
+    ],
+    [
+     7.755,
+     "near_net_or_air"
+    ],
+    [
+     8.638,
+     "student_racket"
+    ]
+   ]
+  },
+  {
+   "point": "P02",
+   "start": 14.75,
+   "end": 18.25,
+   "sheet": "P02_014.8-018.2.jpg",
+   "winner": "student",
+   "how": "coach_error",
+   "confidence": "low",
+   "evidence": "17.25 student forehand; 17.75 coach blocks; 18.00 student in ready stance, no stroke; 18.25 student stands up. Ball after the coach's block not visible, likely into net (coach does not turn to fetch).",
+   "source": "A",
+   "ttcut_events": [
+    [
+     15.825,
+     "near_net_or_air"
+    ],
+    [
+     17.608,
+     "landing_on_coach_half"
+    ]
+   ]
+  },
+  {
+   "point": "P03",
+   "start": 22.75,
+   "end": 25.25,
+   "sheet": "P03_022.8-025.2.jpg",
+   "winner": "student",
+   "how": "coach_error",
+   "confidence": "low",
+   "evidence": "23.75 student serves; 24.25 coach backhand receive at the table; 24.50 coach leans over table, student never strokes again; 24.75 student relaxes. Fate of the receive not visible (likely net); convention: failed return with unseen fate = coach_error.",
+   "source": "A",
+   "ttcut_events": []
+  },
+  {
+   "point": "P04",
+   "start": 27.75,
+   "end": 33.25,
+   "sheet": "P04_027.8-033.2.jpg",
+   "winner": "student",
+   "how": "coach_error",
+   "confidence": "low",
+   "evidence": "31.75 student forehand; 32.00 ball bounces mid coach half; 32.25 coach forehand at table end; 32.50 student ready but no stroke, 32.75 both stand up. Fate of coach's return not visible; convention: failed return with unseen fate = coach_error.",
+   "source": "A",
+   "ttcut_events": [
+    [
+     30.365,
+     "landing_on_coach_half"
+    ]
+   ]
+  },
+  {
+   "point": "P05",
+   "start": 37.25,
+   "end": 40.25,
+   "sheet": "P05_037.2-040.2.jpg",
+   "winner": "coach",
+   "how": "student_error",
+   "confidence": "medium",
+   "evidence": "39.00 coach hits; 39.25-39.50 student backhand pops ball up; 39.75 ball at net top, 40.00-40.25 ball seen behind the net mesh on student's side; 41.75 student scoops ball off his side of table.",
+   "source": "A",
+   "ttcut_events": []
+  },
+  {
+   "point": "P06",
+   "start": 46.25,
+   "end": 49.75,
+   "sheet": "P06_046.2-049.8.jpg",
+   "winner": "unclear",
+   "how": "unclear",
+   "confidence": "low",
+   "evidence": "48.50 student lunges for a short ball; 48.75 his return floats high toward coach; 49.00 coach hunches forward at table, ball not visible; neither plays again. Cannot tell if ball was out/net or coach failed.",
+   "source": "A"
+  },
+  {
+   "point": "P07",
+   "start": 66.75,
+   "end": 70.75,
+   "sheet": "P07_066.8-070.8.jpg",
+   "winner": "coach",
+   "how": "student_error",
+   "confidence": "medium",
+   "evidence": "69.25-69.50 student forehand block; 69.75 ball seen through net mesh on student's side while coach is still in backswing; 70.25-71.75 ball stays at net on student's side and student picks it up.",
+   "source": "A",
+   "ttcut_events": []
+  },
+  {
+   "point": "P08",
+   "start": 76.75,
+   "end": 79.75,
+   "sheet": "P08_076.8-079.8.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "medium",
+   "evidence": "79.00 student forehand; 79.25 ball bounces on right of coach's half; 79.50 coach swings forehand at table end while blurred ball is already dropping to the floor below the table end; 79.75 coach stands. Convention: ball seen passing the coach = student_winner.",
+   "source": "A",
+   "ttcut_events": [
+    [
+     78.903,
+     "student_racket"
+    ]
+   ]
+  },
+  {
+   "point": "P09",
+   "start": 83.75,
+   "end": 86.75,
+   "sheet": "P09_083.8-086.8.jpg",
+   "winner": "student",
+   "how": "coach_error",
+   "confidence": "low",
+   "evidence": "85.50-85.75 student forehand; 86.00 coach blocks; 86.25 ball near left end of net at net height, student stands up and never strokes; 87.25 coach takes new ball from box. Exact fate (net/wide) not seen.",
+   "source": "A",
+   "ttcut_events": [
+    [
+     84.923,
+     "near_net_or_air"
+    ]
+   ]
+  },
+  {
+   "point": "P10",
+   "start": 95.25,
+   "end": 107.75,
+   "sheet": "P10_095.2-107.8.jpg",
+   "winner": "none",
+   "how": "not_a_point",
+   "confidence": "high",
+   "evidence": "用户确认：练习，不算分",
+   "source": "user"
+  },
+  {
+   "point": "P11",
+   "start": 113.75,
+   "end": 116.25,
+   "sheet": "P11_113.8-116.2.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "high",
+   "evidence": "115.25 student short receive; 115.75 ball bounces on coach's half near net by right sideline as coach reaches; 116.00 ball drops off the right side under coach's paddle; 116.50 coach turns away. Convention: ball seen passing the coach = student_winner.",
+   "source": "A",
+   "ttcut_events": [
+    [
+     114.987,
+     "near_net_or_air"
+    ]
+   ]
+  },
+  {
+   "point": "P12",
+   "start": 379.75,
+   "end": 388.75,
+   "sheet": "P12_379.8-388.8.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "low",
+   "evidence": "388.25 student forehand crosses net to coach's right; 388.50 blurred ball low past coach's left leg with no stroke from coach; bounce on table not visible, coach and student then relax.",
+   "source": "B",
+   "ttcut_events": [
+    [
+     381.527,
+     "student_racket"
+    ],
+    [
+     386.778,
+     "student_racket"
+    ],
+    [
+     387.847,
+     "student_racket"
+    ],
+    [
+     388.28,
+     "landing_on_coach_half"
+    ]
+   ]
+  },
+  {
+   "point": "P13",
+   "start": 396.25,
+   "end": 408.75,
+   "sheet": "P13_396.2-408.8.jpg",
+   "winner": "coach",
+   "how": "student_error",
+   "confidence": "medium",
+   "evidence": "408.00 student forehand; 408.25 ball sitting on the net tape on student's side; 408.50+ nothing crosses, coach never moves, student relaxes.",
+   "source": "B",
+   "ttcut_events": [
+    [
+     399.385,
+     "coach_racket"
+    ],
+    [
+     404.387,
+     "near_net_or_air"
+    ],
+    [
+     405.053,
+     "landing_on_coach_half"
+    ]
+   ]
+  },
+  {
+   "point": "P14",
+   "start": 415.25,
+   "end": 417.75,
+   "sheet": "P14_415.2-417.8.jpg",
+   "winner": "coach",
+   "how": "student_error",
+   "confidence": "low",
+   "evidence": "417.25 student short push at the net; 417.50 coach only reaches at table end, no real stroke; 418.00-418.50 ball bouncing on floor beside student near net post (likely push into net); fate not clearly visible.",
+   "source": "B",
+   "ttcut_events": []
+  },
+  {
+   "point": "P15",
+   "start": 451.25,
+   "end": 455.75,
+   "sheet": "P15_451.2-455.8.jpg",
+   "winner": "unclear",
+   "how": "unclear",
+   "confidence": "low",
+   "evidence": "454.00 student forehand toward coach; 454.25 ball (or a spare ball) at coach's left hip, coach makes no stroke 454.25-455.50; 455.75 coach feeds a ball back. Where the student's ball landed is not visible.",
+   "source": "B"
+  },
+  {
+   "point": "P16",
+   "start": 459.25,
+   "end": 463.25,
+   "sheet": "P16_459.2-463.2.jpg",
+   "winner": "coach",
+   "how": "student_error",
+   "confidence": "medium",
+   "evidence": "461.00 student's backhand at net pops the ball up; 461.25-461.50 coach crouches but no ball reaches his side; 461.75 ball falling in front of student on his side; 462.25 student catches it and tosses it to coach.",
+   "source": "B",
+   "ttcut_events": [
+    [
+     460.68,
+     "student_racket"
+    ]
+   ]
+  },
+  {
+   "point": "P17",
+   "start": 464.25,
+   "end": 467.75,
+   "sheet": "P17_464.2-467.8.jpg",
+   "winner": "unclear",
+   "how": "unclear",
+   "confidence": "low",
+   "evidence": "466.50 coach short ball at net; 467.00-467.75 student lunges and falls onto table (free hand on surface), ball low at net tape; coach makes no stroke; which side the ball dropped on is not resolvable.",
+   "source": "B"
+  },
+  {
+   "point": "P18",
+   "start": 470.75,
+   "end": 473.75,
+   "sheet": "P18_470.8-473.8.jpg",
+   "winner": "student",
+   "how": "coach_error",
+   "confidence": "medium",
+   "evidence": "473.00 student's ball clips the net tape and drops on coach's side; 473.75 coach reaches in; 474.00-474.25 ball still on coach's table under his paddle (no return); 474.75 coach picks it up.",
+   "source": "B",
+   "ttcut_events": []
+  },
+  {
+   "point": "P19",
+   "start": 475.75,
+   "end": 481.75,
+   "sheet": "P19_475.8-481.8.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "medium",
+   "evidence": "481.00 student forehand; 481.50 ball bounces on coach's half; 481.75 coach swings and ball passes below his paddle off the end; 482.00+ coach stops.",
+   "source": "B",
+   "ttcut_events": [
+    [
+     476.82,
+     "student_racket"
+    ],
+    [
+     477.872,
+     "student_racket"
+    ],
+    [
+     478.338,
+     "landing_on_coach_half"
+    ]
+   ]
+  },
+  {
+   "point": "P20",
+   "start": 488.75,
+   "end": 499.25,
+   "sheet": "P20_488.8-499.2.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "low",
+   "evidence": "498.60 student forehand loop; 499.00 coach reaches to his right, blurred ball at near-right corner below table level, past paddle; 499.25+ both calm. Bounce not clearly seen.",
+   "source": "B",
+   "ttcut_events": [
+    [
+     492.177,
+     "coach_racket"
+    ],
+    [
+     496.513,
+     "landing_on_coach_half"
+    ]
+   ]
+  },
+  {
+   "point": "P21",
+   "start": 502.75,
+   "end": 510.25,
+   "sheet": "P21_502.8-510.2.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "low",
+   "evidence": "509.50 student forehand; 510.00 coach block attempt at table end, blurred ball low beside table past him; 510.75-511.75 coach turns toward camera. Bounce not seen, could be wide.",
+   "source": "B",
+   "ttcut_events": [
+    [
+     508.785,
+     "landing_on_coach_half"
+    ]
+   ]
+  },
+  {
+   "point": "P22",
+   "start": 512.75,
+   "end": 516.75,
+   "sheet": "P22_512.8-516.8.jpg",
+   "winner": "student",
+   "how": "coach_error",
+   "confidence": "low",
+   "evidence": "515.50 student forehand lands on coach's half at 515.75; 516.00 coach blocks; ball never seen again and student relaxes at 516.25 as if nothing came back. Fate of coach's block not visible.",
+   "source": "B",
+   "ttcut_events": [
+    [
+     514.305,
+     "student_racket"
+    ],
+    [
+     515.655,
+     "landing_on_coach_half"
+    ]
+   ]
+  },
+  {
+   "point": "P23",
+   "start": 522.25,
+   "end": 525.75,
+   "sheet": "P23_522.2-525.8.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "low",
+   "evidence": "524.60 student forehand; 524.75 ball crosses net; 525.00 coach reaches forward but ball is already below table height at near-left, past him; bounce not seen; 525.25+ coach drops paddle.",
+   "source": "B",
+   "ttcut_events": []
+  },
+  {
+   "point": "P24",
+   "start": 527.25,
+   "end": 539.75,
+   "sheet": "P24_527.2-539.8.jpg",
+   "winner": "none",
+   "how": "not_a_point",
+   "confidence": "high",
+   "evidence": "用户确认：练习重发，不算分",
+   "source": "user"
+  },
+  {
+   "point": "P25",
+   "start": 540.25,
+   "end": 541.75,
+   "sheet": "P25_540.2-541.8.jpg",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "medium",
+   "evidence": "540.25 coach serves; 541.00 student forehand attack; 541.25 ball bounces mid coach half; coach makes no attempt, paddle stays low 541.25-542.00.",
+   "source": "B",
+   "ttcut_events": []
+  }
+ ],
+ "tools": {
+  "ours (audio)": {
+   "student_points_captured": "8/15",
+   "student_recall": 0.533,
+   "coach_points_captured": "1/5",
+   "clips_in_match": 22,
+   "clips_with_student_point": 8,
+   "clip_precision_student": 0.364,
+   "kept_s_in_match": 70.1,
+   "seconds_per_student_point": 8.8,
+   "captured": [
+    "P01",
+    "P08",
+    "P12",
+    "P19",
+    "P20",
+    "P21",
+    "P22",
+    "P25"
+   ]
+  },
+  "TTLab": {
+   "student_points_captured": "10/15",
+   "student_recall": 0.667,
+   "coach_points_captured": "4/5",
+   "clips_in_match": 23,
+   "clips_with_student_point": 8,
+   "clip_precision_student": 0.348,
+   "kept_s_in_match": 186.3,
+   "seconds_per_student_point": 18.6,
+   "captured": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P08",
+    "P09",
+    "P11",
+    "P18",
+    "P19",
+    "P23"
+   ]
+  },
+  "TTcut 落台": {
+   "student_points_captured": "4/15",
+   "student_recall": 0.267,
+   "coach_points_captured": "0/5",
+   "clips_in_match": 7,
+   "clips_with_student_point": 4,
+   "clip_precision_student": 0.571,
+   "kept_s_in_match": 43.7,
+   "seconds_per_student_point": 10.9,
+   "captured": [
+    "P01",
+    "P02",
+    "P12",
+    "P22"
+   ]
+  },
+  "TTcut 连续运动": {
+   "student_points_captured": "8/15",
+   "student_recall": 0.533,
+   "coach_points_captured": "4/5",
+   "clips_in_match": 14,
+   "clips_with_student_point": 6,
+   "clip_precision_student": 0.429,
+   "kept_s_in_match": 135.2,
+   "seconds_per_student_point": 16.9,
+   "captured": [
+    "P12",
+    "P18",
+    "P19",
+    "P20",
+    "P21",
+    "P22",
+    "P23",
+    "P25"
+   ]
+  },
+  "PingPongVision (CV回退)": {
+   "student_points_captured": "0/15",
+   "student_recall": 0.0,
+   "coach_points_captured": "0/5",
+   "clips_in_match": 0,
+   "clips_with_student_point": 0,
+   "clip_precision_student": null,
+   "kept_s_in_match": 0,
+   "seconds_per_student_point": null,
+   "captured": []
+  }
+ },
+ "ttcut_events": {
+  "near_net_or_air": 11,
+  "student_racket": 26,
+  "landing_on_coach_half": 18,
+  "coach_racket": 2
+ }
+}

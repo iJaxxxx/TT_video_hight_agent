@@ -1,0 +1,461 @@
+{
+ "note": "TTcut 落台事件按画面网线分边，网后的 39 个逐张目测（见 ttcut_far_end_events.jpg）。TTcut 自带的球台坐标因标定角点错误不可用，已删除。",
+ "events": [
+  {
+   "frame": 227,
+   "time": 3.785,
+   "x": 1101,
+   "y": 728,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 357,
+   "time": 5.953,
+   "x": 1123,
+   "y": 708,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 385,
+   "time": 6.42,
+   "x": 881,
+   "y": 716,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 417,
+   "time": 6.953,
+   "x": 1187,
+   "y": 685,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 465,
+   "time": 7.755,
+   "x": 921,
+   "y": 698,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 518,
+   "time": 8.638,
+   "x": 1082,
+   "y": 708,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 949,
+   "time": 15.825,
+   "x": 1173,
+   "y": 705,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 1056,
+   "time": 17.608,
+   "x": 777,
+   "y": 860,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 1821,
+   "time": 30.365,
+   "x": 790,
+   "y": 787,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 4732,
+   "time": 78.903,
+   "x": 1116,
+   "y": 706,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 5093,
+   "time": 84.923,
+   "x": 888,
+   "y": 672,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 5873,
+   "time": 97.928,
+   "x": 1133,
+   "y": 710,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 6175,
+   "time": 102.965,
+   "x": 811,
+   "y": 762,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 6206,
+   "time": 103.482,
+   "x": 1200,
+   "y": 692,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 6896,
+   "time": 114.987,
+   "x": 957,
+   "y": 723,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 8874,
+   "time": 147.968,
+   "x": 1040,
+   "y": 704,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 9095,
+   "time": 151.653,
+   "x": 1034,
+   "y": 714,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 11002,
+   "time": 183.452,
+   "x": 1017,
+   "y": 705,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 11751,
+   "time": 195.942,
+   "x": 1043,
+   "y": 695,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 13192,
+   "time": 219.968,
+   "x": 1072,
+   "y": 704,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 13229,
+   "time": 220.585,
+   "x": 1114,
+   "y": 768,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 13573,
+   "time": 226.322,
+   "x": 1042,
+   "y": 688,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 16407,
+   "time": 273.577,
+   "x": 741,
+   "y": 802,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 16469,
+   "time": 274.61,
+   "x": 1127,
+   "y": 703,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 16493,
+   "time": 275.01,
+   "x": 762,
+   "y": 808,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 16840,
+   "time": 280.797,
+   "x": 939,
+   "y": 792,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 17296,
+   "time": 288.4,
+   "x": 1114,
+   "y": 713,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 17918,
+   "time": 298.772,
+   "x": 785,
+   "y": 776,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 17948,
+   "time": 299.272,
+   "x": 1126,
+   "y": 700,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 18685,
+   "time": 311.562,
+   "x": 902,
+   "y": 796,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 18851,
+   "time": 314.328,
+   "x": 971,
+   "y": 789,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 18875,
+   "time": 314.728,
+   "x": 1031,
+   "y": 704,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 18931,
+   "time": 315.663,
+   "x": 1129,
+   "y": 706,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 20641,
+   "time": 344.177,
+   "x": 885,
+   "y": 704,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 20693,
+   "time": 345.043,
+   "x": 732,
+   "y": 790,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 20798,
+   "time": 346.793,
+   "x": 874,
+   "y": 680,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 20998,
+   "time": 350.128,
+   "x": 850,
+   "y": 813,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 21953,
+   "time": 366.053,
+   "x": 922,
+   "y": 716,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 21990,
+   "time": 366.67,
+   "x": 1157,
+   "y": 697,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 22881,
+   "time": 381.527,
+   "x": 1213,
+   "y": 690,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 23196,
+   "time": 386.778,
+   "x": 1091,
+   "y": 687,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 23260,
+   "time": 387.847,
+   "x": 1155,
+   "y": 716,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 23286,
+   "time": 388.28,
+   "x": 990,
+   "y": 791,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 23952,
+   "time": 399.385,
+   "x": 834,
+   "y": 706,
+   "side": "student_end",
+   "visual": "coach_racket"
+  },
+  {
+   "frame": 24252,
+   "time": 404.387,
+   "x": 972,
+   "y": 716,
+   "side": "student_end",
+   "visual": "near_net_or_air"
+  },
+  {
+   "frame": 24292,
+   "time": 405.053,
+   "x": 795,
+   "y": 807,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 26092,
+   "time": 435.068,
+   "x": 1106,
+   "y": 701,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 27141,
+   "time": 452.56,
+   "x": 1082,
+   "y": 707,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 27628,
+   "time": 460.68,
+   "x": 1116,
+   "y": 692,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 28596,
+   "time": 476.82,
+   "x": 1134,
+   "y": 707,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 28659,
+   "time": 477.872,
+   "x": 1182,
+   "y": 688,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 28687,
+   "time": 478.338,
+   "x": 708,
+   "y": 795,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 29517,
+   "time": 492.177,
+   "x": 866,
+   "y": 684,
+   "side": "student_end",
+   "visual": "coach_racket"
+  },
+  {
+   "frame": 29777,
+   "time": 496.513,
+   "x": 852,
+   "y": 795,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 30513,
+   "time": 508.785,
+   "x": 793,
+   "y": 789,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  },
+  {
+   "frame": 30844,
+   "time": 514.305,
+   "x": 1088,
+   "y": 701,
+   "side": "student_end",
+   "visual": "student_racket"
+  },
+  {
+   "frame": 30925,
+   "time": 515.655,
+   "x": 1027,
+   "y": 789,
+   "side": "coach",
+   "visual": "landing_on_coach_half"
+  }
+ ]
+}

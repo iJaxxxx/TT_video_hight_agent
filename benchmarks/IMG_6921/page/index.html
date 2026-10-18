@@ -1,0 +1,470 @@
+<title>乒乓回合切分评测</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column (~760px) for prose; the timeline and tables break out to ~1080px.
+   Palette: table-tennis table blue as accent, cool neutrals; blue = clip time that is real play, orange = clip time that is dead ball. */
+:root {
+  --bg: #f5f7f8;
+  --surface: #ffffff;
+  --ink: #14191e;
+  --ink-2: #47515b;
+  --muted: #76818b;
+  --line: #dde2e6;
+  --band: #eaeef1;
+  --accent: #1b4d72;
+  --hi: #e3eef8;
+  --rally: #2a78d6;
+  --dead: #eb6834;
+  --gt: #3a4550;
+  --font-display: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1215; --surface: #161a1e; --ink: #edf0f2; --ink-2: #b5bec6; --muted: #87929b;
+    --line: #2a3138; --band: #1b2026; --accent: #86b8de; --hi: #1c2b38;
+    --rally: #3987e5; --dead: #d95926; --gt: #c9d1d9; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1215; --surface: #161a1e; --ink: #edf0f2; --ink-2: #b5bec6; --muted: #87929b;
+  --line: #2a3138; --band: #1b2026; --accent: #86b8de; --hi: #1c2b38;
+  --rally: #3987e5; --dead: #d95926; --gt: #c9d1d9; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.75; }
+.page { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 52px; }
+.prose { max-width: 760px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.3; color: var(--ink); }
+h1 { font-size: clamp(28px, 4.4vw, 40px); font-weight: 700; letter-spacing: 0.01em; }
+h2 { font-size: 22px; font-weight: 700; margin-bottom: 14px; }
+h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+p { margin: 0 0 12px; }
+ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.lede { color: var(--ink-2); font-size: 16px; margin-top: 14px; }
+.mono, td.num, .tc { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.tc { font-size: 0.92em; }
+section { display: grid; gap: 4px; min-width: 0; }
+.note { color: var(--muted); font-size: 13px; }
+
+/* verdict */
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 8px; }
+.verdict div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.verdict b { display: block; font-size: 14px; color: var(--accent); margin-bottom: 4px; }
+.verdict span { color: var(--ink-2); font-size: 14px; line-height: 1.65; }
+
+/* timeline */
+.chart-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 16px 12px; display: grid; gap: 12px; min-width: 0; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.controls button { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink-2); cursor: pointer; }
+.controls button:hover { border-color: var(--accent); color: var(--ink); }
+.controls button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.controls button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.chart-scroll { overflow-x: auto; position: relative; }
+#timeline { display: block; min-width: 680px; width: 100%; }
+#timeline text { font-family: var(--font-body); fill: var(--ink-2); font-size: 12px; }
+#timeline .axis text { font-family: var(--font-mono); fill: var(--muted); font-size: 11px; }
+#timeline .grid { stroke: var(--line); stroke-width: 1; }
+#timeline .band { fill: var(--band); }
+#timeline .band-label { fill: var(--muted); font-size: 11px; }
+#timeline .seg-gt { fill: var(--gt); }
+#timeline .seg-in { fill: var(--rally); }
+#timeline .seg-dead { fill: var(--dead); }
+#timeline .hit { fill: transparent; cursor: default; }
+#timeline .outline.on { stroke: var(--ink); stroke-width: 1.5; }
+#timeline .empty { fill: var(--muted); font-size: 12px; font-style: italic; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12.5px; line-height: 1.55; padding: 8px 10px; border-radius: 6px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); z-index: 2; }
+.tip b { font-weight: 500; }
+
+/* tables */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 9px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 500; color: var(--muted); font-size: 12.5px; letter-spacing: 0.02em; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: none; }
+td.num { text-align: right; white-space: nowrap; }
+th.num { text-align: right; }
+td.best { background: var(--hi); font-weight: 500; color: var(--ink); }
+td.tool { white-space: nowrap; font-weight: 500; }
+td.weak { color: var(--muted); }
+.sub { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }
+
+/* findings */
+.tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px 32px; }
+.tools article { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.tools ul { color: var(--ink-2); font-size: 14.5px; }
+figure { margin: 8px 0 0; }
+figure img { width: 100%; border-radius: 6px; border: 1px solid var(--line); display: block; }
+figcaption { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.55; }
+.tag { display: inline-block; font-size: 11.5px; font-family: var(--font-mono); padding: 1px 7px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); margin-left: 6px; vertical-align: 2px; }
+
+.recs { display: grid; gap: 14px; counter-reset: rec; }
+.recs div { display: grid; grid-template-columns: 28px 1fr; gap: 4px 10px; }
+.recs div::before { counter-increment: rec; content: counter(rec); font-family: var(--font-mono); color: var(--accent); font-weight: 500; }
+.recs b { color: var(--ink); }
+.recs p { margin: 0; color: var(--ink-2); grid-column: 2; }
+
+.files { font-family: var(--font-mono); font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; white-space: pre; color: var(--ink-2); line-height: 1.8; user-select: all; }
+footer { color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+@media (max-width: 520px) { .page { padding-inline: 16px; gap: 40px; } th, td { padding: 8px 10px; } }
+</style>
+
+<div class="page">
+  <header class="prose">
+    <div class="eyebrow">IMG_6921 · 9 分 11 秒 · 1080p60 · 固定机位</div>
+    <h1>同一段乒乓球视频，四个工具切出了什么</h1>
+    <p class="lede">把同一段训练视频分别交给我们自己的音频切分（highlight.py）、TTLab、TTcut 和 PingPongVision。第二轮按真正关心的目标评：你（远端学员）的得分球剪到了几个、混进了多少教练得分；第一轮按全部回合评，看保留了哪些回合、漏了哪些、带进了多少死球时间。</p>
+  </header>
+
+  <section>
+    <div class="eyebrow">第二轮 · 按你的得分球评</div>
+    <h2>你（远端学员）的得分球，谁剪得到</h2>
+    <p class="note prose">只看两段对打。每一分由子代理看画面判输赢，再经你确认：你得 15 分，教练得 5 分，另有 2 分是练习、3 分看不清，均不计。片段盖住这一分结束前 0.5 秒（决定胜负的那一板）才算剪到。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>工具</th><th class="num">你的得分球</th><th class="num">教练得分也被剪入</th><th class="num">对打段片段</th><th class="num">含你得分的片段</th><th class="num">对打段保留</th><th class="num">每个得分球摊到</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="tool">ours</td><td class="num">8 / 15</td><td class="num">1 / 5</td><td class="num">22</td><td class="num">36%</td><td class="num">70s</td><td class="num best">8.8s</td></tr>
+          <tr><td class="tool">TTLab</td><td class="num best">10 / 15</td><td class="num">4 / 5</td><td class="num">23</td><td class="num">35%</td><td class="num">186s</td><td class="num">18.6s</td></tr>
+          <tr><td class="tool">TTcut 落台判定</td><td class="num">4 / 15</td><td class="num best">0 / 5</td><td class="num">7</td><td class="num best">57%</td><td class="num best">44s</td><td class="num">10.9s</td></tr>
+          <tr><td class="tool">TTcut 连续运动</td><td class="num">8 / 15</td><td class="num">4 / 5</td><td class="num">14</td><td class="num">43%</td><td class="num">135s</td><td class="num">16.9s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="verdict">
+      <div><b>TTcut 落台最“纯”</b><span>剪出的片段一半以上含你的得分球，教练得分一个都没剪进来，和你的体感一致。代价是你 15 个得分球只剪到 4 个。</span></div>
+      <div><b>TTLab 剪到最多，但不挑</b><span>你的得分球剪到 10 个，教练的 5 个也剪进了 4 个，每个得分球要陪看 18.6 秒。</span></div>
+      <div><b>ours 最省时间</b><span>剪到 8 个，教练得分只混进 1 个（5 个教练得分里 4 个是你失误结束的短分，多半凑不够 2 拍被过滤掉了），每个得分球 8.8 秒。</span></div>
+      <div><b>ours 和 TTLab 正好互补</b><span>两者合起来 15 个全中：TTLab 抓前半段，ours 抓后半段。</span></div>
+    </div>
+  </section>
+
+  <section class="prose">
+    <h2>TTcut 的“落台”为什么偏向你</h2>
+    <p>它全片报了 57 次落台。逐个看画面后：26 次其实是你的击球瞬间，18 次是你的球落在教练半台，11 次在网口附近或空中，2 次是教练击球。约 77% 和你的球有关。</p>
+    <p>原因在机位：你站在远端，击球点在画面里正好压在球台远端那条带上，被当成了落台；教练离镜头近，他的击球点在画面里落在球台区域外，几乎不会被计入。所以它实际上是在追你的出手，而不是追落台。</p>
+    <figure>
+      <img src="img/ttcut_racket_events.jpg" alt="四个被 TTcut 判为落台的时刻，黄圈里的球都贴在远端学员的球拍上" loading="lazy">
+      <figcaption>被判为“落台”的 4 个时刻：黄圈里的球都在你的球拍上。</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>第一轮：按全部回合看</h2>
+    <div class="verdict">
+      <div><b>对打段没有稳定赢家</b><span>前半段对打 TTLab 召回 100%，后半段 TTcut 连续运动召回 100%；两者在另一半都有大段漏检。</span></div>
+      <div><b>ours 最干净、最快</b><span>精度 100%，片段里的死球只有 14 秒，6 秒跑完；代价是漏掉只听到一拍的短分。</span></div>
+      <div><b>TTcut 默认模式不适用</b><span>落台判定在这个侧后方机位下召回只有 25%，要切到“连续运动”模式才可用。</span></div>
+      <div><b>PingPongVision 未测成</b><span>它依赖的 TrackNet 权重在上游的下载链接已失效，无权重的回退模式输出 0 个回合。</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>时间轴</h2>
+    <p class="note prose">每条横带是一个工具最终导出的片段（已按各自的默认规则加前后余量）。蓝色部分对应真值里在打球的时间，橙色部分是被一起剪进来的死球。悬停查看具体时间。</p>
+    <div class="chart-card">
+      <div class="controls" role="group" aria-label="时间范围">
+        <button type="button" id="r-all" data-lo="0" data-hi="551.3" aria-pressed="true">全片</button>
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:var(--gt)"></i>真值回合</span>
+        <span><i style="background:var(--rally)"></i>片段 · 打球中</span>
+        <span><i style="background:var(--dead)"></i>片段 · 死球</span>
+      </div>
+      <div class="chart-scroll" id="chart-scroll">
+        <svg id="timeline" role="img" aria-label="各工具导出片段与真值回合的时间轴对比"></svg>
+        <div class="tip" id="tip" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>全片指标</h2>
+    <p class="note prose">真值：61 个回合，共 266.5 秒，占全片 48%。每列里最好的一格加了底色。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>工具</th><th class="num">片段</th><th class="num">保留时长</th><th class="num">回合召回</th><th class="num">片段精度</th><th class="num">回合时间覆盖</th><th class="num">片段内死球</th><th class="num">一段混 ≥2 分</th><th class="num">耗时</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="tool">ours<span class="sub">highlight.py 音频回合</span></td><td class="num">37</td><td class="num">105s · 19%</td><td class="num">54%</td><td class="num best">100%</td><td class="num">34%</td><td class="num best">14s</td><td class="num">6</td><td class="num best">6s</td></tr>
+          <tr><td class="tool">TTLab</td><td class="num">40</td><td class="num">326s · 59%</td><td class="num best">85%</td><td class="num">88%</td><td class="num">73%</td><td class="num">131s</td><td class="num">12</td><td class="num">35s</td></tr>
+          <tr><td class="tool">TTcut 落台判定<span class="sub">App 默认模式</span></td><td class="num">13</td><td class="num">81s · 15%</td><td class="num">25%</td><td class="num best">100%</td><td class="num">25%</td><td class="num">15s</td><td class="num best">2</td><td class="num">834s<span class="sub">CPU</span></td></tr>
+          <tr><td class="tool">TTcut 连续运动</td><td class="num">27</td><td class="num">302s · 55%</td><td class="num">77%</td><td class="num">89%</td><td class="num best">77%</td><td class="num">98s</td><td class="num">12</td><td class="num">565s<span class="sub">CPU</span></td></tr>
+          <tr><td class="tool weak">PingPongVision<span class="sub">纯 CV 回退，非正式成绩</span></td><td class="num weak">0</td><td class="num weak">0</td><td class="num weak">0</td><td class="num weak">–</td><td class="num weak">0</td><td class="num weak">0</td><td class="num weak">0</td><td class="num weak">239s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note prose">回合召回：真值回合里有多少被片段碰到。片段精度：片段里有多少至少含一段真实回合。时间覆盖：真值回合的秒数被片段盖住了多少。耗时为 M2 Pro 实测；TTcut 在 macOS 上只能用 CPU。</p>
+  </section>
+
+  <section>
+    <h2>分段指标</h2>
+    <p class="note prose">视频中间 4 分钟是发球练习和教练喂球，几乎任何运动检测都能命中，会抬高全片数字。做比赛高光，主要看两段对打。格内依次是召回 / 时间覆盖 / 死球秒数。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>工具</th>
+          <th class="num">对打<span class="sub">0:00–2:07 · 11 分</span></th>
+          <th class="num">发球-接发练习<span class="sub">2:07–3:15 · 14 次</span></th>
+          <th class="num">教练喂球<span class="sub">3:15–6:15 · 22 次</span></th>
+          <th class="num">对打<span class="sub">6:15–9:11 · 14 分</span></th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="tool">ours</td><td class="num">55% / 40% / 1s</td><td class="num">29% / 7% / 3s</td><td class="num">55% / 28% / 4s</td><td class="num">79% / 50% / 6s</td></tr>
+          <tr><td class="tool">TTLab</td><td class="num best">100% / 98% / 35s</td><td class="num best">93% / 72% / 16s</td><td class="num">82% / 64% / 37s</td><td class="num">71% / 68% / 44s</td></tr>
+          <tr><td class="tool">TTcut 落台</td><td class="num">27% / 32% / 4s</td><td class="num">0 / 0 / 0</td><td class="num">36% / 34% / 6s</td><td class="num">29% / 22% / 5s</td></tr>
+          <tr><td class="tool">TTcut 连续运动</td><td class="num">18% / 15% / 1s</td><td class="num">86% / 78% / 21s</td><td class="num best">86% / 87% / 36s</td><td class="num best">100% / 100% / 42s</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>谁挑的高光更好</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>工具</th><th>它认为最好的</th><th>对照真值</th></tr></thead>
+        <tbody>
+          <tr><td class="tool">ours</td><td>60 秒窗口 <span class="tc">7:39.5–8:39.5</span></td><td>窗口内 38 秒在打球，6 个完整回合，最长 10.5 秒；在全片所有 60 秒窗口里排前 7.5%。</td></tr>
+          <tr><td class="tool">TTLab</td><td>17 个高光回合，分最高的是 <span class="tc">0:56.5</span></td><td>0:56.5–0:59.2 是死球，两人拿着球筐走动。按分数取的前 5 个都不在真值最长的 5 个回合里。</td></tr>
+          <tr><td class="tool">TTcut</td><td>落台次数 / 回合时长</td><td>落台模式前 5 个命中 0 个真值最长回合，连续运动模式命中 1 个。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>逐个看</h2>
+    <div class="tools">
+      <article>
+        <h3>ours<span class="tag">音频</span></h3>
+        <ul>
+          <li>切出的都是真回合，片段里几乎没有死球。</li>
+          <li>漏掉的 8 个对打回合全是 2.5–4 秒的短分，回合里只检测到 1 次击球，够不上“≥2 拍”的门槛。训练段召回低也是同一原因：发球加一板接发，通常只听到一声。</li>
+          <li>死球后球在地上弹跳的声音会被当成击球，回合尾巴拖长，相邻两分被并成一段（6 处）。</li>
+          <li>片段从第一拍开始，抛球被切掉，所以时间覆盖只有 34%。</li>
+        </ul>
+        <figure>
+          <img src="img/bounce_noise.jpg" alt="8:29 到 8:33 的连续帧：8:30.5 之后已经死球，有人在捡球，8:33 开始下一次发球" loading="lazy">
+          <figcaption>8:29–8:33：8:30.5 起已是死球，但音频在 8:30.25–8:31.9 报了 5 次“击球”。</figcaption>
+        </figure>
+      </article>
+      <article>
+        <h3>TTLab<span class="tag">运动 + 音频</span></h3>
+        <ul>
+          <li>召回高，但保留了 59% 的时长，其中 131 秒是死球。</li>
+          <li>单个回合硬上限 12 秒，有 13 段被截在 12 秒，长回合会被切短、相邻几分混在一起。</li>
+          <li>后半段漏掉了 <span class="tc">8:07–8:41</span>，这是全片对打最密的一段。</li>
+          <li>5 个误检里，7:13–7:25 是单人练发球（球在飞，按定义不算回合），7:02–7:09 是两人来回传球，0:56、5:50、9:07 是真正的死球。</li>
+          <li>不在前端手点球台时，球验证步骤不生效。</li>
+        </ul>
+        <figure>
+          <img src="img/ttlab_top_pick.jpg" alt="0:56 到 0:59.5 的连续帧：两名选手拿着球筐走动，没有在打球" loading="lazy">
+          <figcaption>TTLab 评分最高的“高光”0:56.5–0:59.2：两人在走动、搬球筐。</figcaption>
+        </figure>
+      </article>
+      <article>
+        <h3>TTcut<span class="tag">BlurBall + 球台标定</span></h3>
+        <ul>
+          <li><b>自动标定有误</b>（更正）：左下角落在近端底线中点，真正的角还在更左边；它还把远端底线当成了长边，长宽方向弄反。之前写“四角准确”是在缩小截图上的误判。</li>
+          <li>默认的落台判定全片只检测到 57 次落台，凑成 13 个回合。这个机位从侧后方拍，远半台被严重压缩，可能是原因，未验证。</li>
+          <li>连续运动模式在后半段对打和训练段很好；3 个误检都在单人练发球段，球确实在飞。</li>
+          <li>开头 0:00–2:20 几乎全漏。那段画面里球台右侧多了一个白色球筐，只是猜测，原因未查实。</li>
+        </ul>
+        <figure>
+          <img src="img/calib.jpg" alt="视频画面上用红线框出的球台，左下角落在近端底线中点而不是球台角" loading="lazy">
+          <figcaption>TTcut 自动标定的球台（红框）。左下角其实落在近端底线中点，并不是真正的球台角。</figcaption>
+        </figure>
+      </article>
+      <article>
+        <h3>PingPongVision<span class="tag">TrackNet</span></h3>
+        <ul>
+          <li>需要 TrackNetV3_TableTennis 的权重。上游仓库和它文档里给的 OneDrive 链接都已失效，提示“cannot access this document”。</li>
+          <li>无权重时回退到纯 CV，全片 0 个回合。作者说明这个回退只供开发用，不能当作它的成绩。</li>
+          <li>运行时使用了 TTcut 标定出的球台四角（这组角点有误，见 TTcut 一栏）。</li>
+        </ul>
+        <figure>
+          <img src="img/ball_box.jpg" alt="5 秒、30 秒、98 秒三帧对比：前两帧球台右侧有一个白色球筐，98 秒时已移走" loading="lazy">
+          <figcaption>5s、30s 球台右侧有白色球筐，98s 已移走（与 TTcut 开头漏检的时间段重合）。</figcaption>
+        </figure>
+      </article>
+    </div>
+  </section>
+
+  <section class="prose">
+    <h2>对我们项目的启示</h2>
+    <div class="recs">
+      <div><b>音频定内容，视觉定边界</b><p>音频精度高、几乎不带死球；视觉召回高但时好时坏。用“球在飞”的视觉信号定回合起止，再用击球声剔除没有击球的片段、数拍数。</p></div>
+      <div><b>单拍短分不直接丢</b><p>把“≥2 拍”放宽成“1 拍 + 视觉确认有球飞行”，可以补回漏掉的 8 个对打短分。</p></div>
+      <div><b>过滤死球后的弹跳声</b><p>落点在球台以外、或间隔不符合来回节奏的“击球”剔除掉，能修复回合拖尾和两分合并。球台标定可以借 TTcut 那类模型。</p></div>
+      <div><b>回合起点前推到抛球</b><p>现在从第一拍开始切，发球被切掉了。</p></div>
+      <div><b>长回合不等于高光</b><p>TTLab 的打分和 TTcut 的落台计数都挑不出好片段。我们的“拍数^1.5 窗口”相对最好，但仍然只衡量了打得多，没有衡量打得好。</p></div>
+    </div>
+  </section>
+
+  <section class="prose">
+    <h2>方法与局限</h2>
+    <ul>
+      <li><b>真值</b>由 3 个子代理按每 0.5 秒一帧的缩略图纯视觉标注（打球 / 死球 / 不确定），标注时看不到任何工具的输出。抽查 4 处与画面一致；边界精度约 ±0.5 秒；三段之间没有重叠标注，没有一致性数据。“不确定”一律不算回合。</li>
+      <li><b>“回合”包含训练</b>：教练喂球、发球-接发都算。比赛结论以分段表的两段对打为准。</li>
+      <li><b>导出规则</b>按各工具默认：TTLab 用 background 模式；TTcut 用 full 模式、置信度 0.7、前 2.5 秒后 1 秒（落台模式另加 1 秒尾巴）；PingPongVision 前后各 0.5 秒；ours 不导出回合，这里按前后各 0.5 秒补上，仅作参照。</li>
+      <li>TTLab 和 TTcut 都是绕过界面直接调用核心检测代码。</li>
+      <li><b>只有一个视频、一个机位</b>，结论不能直接推广。</li>
+      <li><b>许可证</b>：TTcut 为 GPL-3.0，TTLab 仅限个人非商业使用，PingPongVision 未声明许可证。本次只做本地评测，没有把它们的代码放进项目。</li>
+    </ul>
+  </section>
+
+  <section class="prose">
+    <h2>对照视频</h2>
+    <p>三个工具各自导出的片段已拼成视频，左上角标出片段序号和对应的原片时间，左下角按真值标出“打球中”或“死球”。文件在本机下载目录：</p>
+    <div class="files">~/Downloads/IMG_6921_对比_TTLab.mp4
+~/Downloads/IMG_6921_对比_TTcut连续运动.mp4
+~/Downloads/IMG_6921_对比_TTcut落台.mp4</div>
+  </section>
+
+  <footer>数据与脚本：<span class="mono">benchmarks/IMG_6921/</span>（compare.py、metrics.json、REPORT.md）。耗时在 Apple M2 Pro 上测得。</footer>
+</div>
+
+<script>
+const DATA = {"duration":551.3,"gt":[[2.75,10.75],[14.75,18.25],[22.75,25.25],[27.75,33.25],[37.25,40.25],[46.25,49.75],[66.75,70.75],[76.75,79.75],[83.75,86.75],[95.25,107.75],[113.75,116.25],[127.25,129.25],[131.25,135.25],[140.75,142.75],[143.75,145.75],[146.75,148.75],[150.75,152.75],[157.25,159.25],[160.25,162.25],[163.75,166.25],[174.75,176.75],[177.25,179.25],[179.75,184.25],[184.75,191.75],[192.25,197.25],[206.25,208.75],[210.75,215.25],[215.75,217.25],[218.75,223.75],[225.25,231.75],[232.25,237.25],[239.25,242.75],[267.25,269.75],[271.25,276.25],[278.75,281.75],[288.25,293.75],[294.25,304.75],[310.75,312.75],[313.25,317.25],[318.25,320.75],[330.75,333.75],[336.75,339.75],[341.75,347.25],[347.75,350.75],[355.75,360.25],[363.25,367.75],[369.75,372.75],[379.75,388.75],[396.25,408.75],[415.25,417.75],[451.25,455.75],[459.25,463.25],[464.25,467.75],[470.75,473.75],[475.75,481.75],[488.75,499.25],[502.75,510.25],[512.75,516.75],[522.25,525.75],[527.25,539.75],[540.25,541.75]],"sections":[["对打 0:00–2:07",0,127],["发球-接发练习 2:07–3:15",127,195],["教练喂球 3:15–6:15",195,375],["对打 6:15–9:11",375,551.3]],"tools":{"ours (audio)":[[5.71,10.27],[29.95,32.16],[46.52,48.95],[67.27,69.86],[78.09,80.97],[97.76,99.76],[102.18,107.34],[128.03,129.94],[134.31,136.31],[142.44,144.07],[217.13,219.87],[227.08,228.66],[231.48,233.05],[233.9,235.46],[266.77,269.38],[270.86,275.19],[289.08,291.32],[292.25,295.44],[302.26,303.56],[312.51,316.29],[347.82,350.36],[371.4,373.16],[384.73,386.04],[386.95,388.57],[396.56,400.34],[400.94,402.77],[403.6,406.32],[407.48,409.58],[451.33,453.75],[464.31,466.67],[470.67,472.38],[477.49,482.9],[488.92,490.76],[494.69,500.15],[506.0,512.39],[514.89,516.83],[534.8,542.15]],"TTLab":[[1.41,13.41],[14.98,18.59],[21.81,32.87],[36.22,40.6],[41.51,50.96],[56.47,59.24],[64.98,74.32],[76.81,88.81],[95.16,107.16],[111.86,119.02],[125.91,130.54],[131.03,137.16],[140.46,149.77],[150.42,154.7],[156.87,162.36],[163.65,168.2],[173.43,185.43],[203.72,210.59],[211.19,223.19],[261.65,273.65],[277.81,283.8],[286.54,298.54],[316.65,323.15],[329.89,334.96],[336.45,348.45],[350.92,354.83],[355.42,361.95],[362.68,373.91],[376.16,388.16],[394.54,406.54],[414.79,418.48],[422.58,428.93],[433.59,445.59],[451.09,458.65],[459.16,463.55],[464.06,474.76],[475.38,487.38],[521.12,526.27],[526.95,538.95],[547.41,551.01]],"TTcut 落台":[[1.29,10.64],[13.32,19.61],[100.47,105.48],[217.47,222.59],[271.08,277.01],[296.27,301.27],[309.06,317.66],[341.68,348.79],[363.55,368.67],[384.28,390.28],[401.89,407.05],[474.32,480.34],[511.8,517.65]],"TTcut 连续运动":[[36.48,40.9],[99.4,103.81],[140.42,159.26],[161.23,179.23],[179.59,198.97],[210.93,222.03],[223.31,230.79],[233.01,237.86],[237.96,243.56],[266.89,276.16],[277.88,283.62],[285.87,307.29],[308.76,323.01],[339.91,351.25],[354.6,373.9],[377.71,389.45],[394.88,409.54],[413.96,419.04],[432.33,437.69],[439.04,443.59],[444.66,450.14],[450.81,456.04],[458.0,482.66],[487.36,499.06],[501.57,510.97],[511.67,518.69],[520.77,542.3]],"PingPongVision (CV回退)":[]}};
+const LANES = [
+  { key: "gt", name: "真值" },
+  { key: "ours (audio)", name: "ours" },
+  { key: "TTLab", name: "TTLab" },
+  { key: "TTcut 落台", name: "TTcut 落台" },
+  { key: "TTcut 连续运动", name: "TTcut 连续运动" },
+  { key: "PingPongVision (CV回退)", name: "PingPongVision" },
+];
+const SECTION_NAMES = DATA.sections;
+const svg = document.getElementById("timeline");
+const tip = document.getElementById("tip");
+const scroll = document.getElementById("chart-scroll");
+const NS = "http://www.w3.org/2000/svg";
+let domain = [0, DATA.duration];
+
+const fmt = t => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, "0")}`;
+const fmtTick = t => `${Math.floor(t / 60)}:${String(Math.round(t % 60)).padStart(2, "0")}`;
+
+// split a clip into parts that fall inside / outside ground-truth rallies
+function splitClip(s, e) {
+  const parts = []; let cur = s;
+  for (const [gs, ge] of DATA.gt) {
+    if (ge <= cur || gs >= e) continue;
+    if (gs > cur) parts.push([cur, gs, false]);
+    parts.push([Math.max(gs, cur), Math.min(ge, e), true]);
+    cur = Math.min(ge, e);
+  }
+  if (cur < e) parts.push([cur, e, false]);
+  return parts;
+}
+
+function el(name, attrs, parent) {
+  const n = document.createElementNS(NS, name);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+
+function showTip(evt, html) {
+  tip.innerHTML = html; tip.hidden = false;
+  const box = scroll.getBoundingClientRect();
+  const x = evt.clientX - box.left + scroll.scrollLeft;
+  const y = evt.clientY - box.top;
+  tip.style.left = Math.max(90, Math.min(x, scroll.scrollWidth - 90)) + "px";
+  tip.style.top = y + "px";
+}
+
+function render() {
+  const W = Math.max(680, scroll.clientWidth);
+  const left = 118, right = 14, top = 26, laneH = 30, gap = 8, axisH = 26;
+  const H = top + LANES.length * (laneH + gap) + axisH;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("height", H);
+  svg.innerHTML = "";
+  const [lo, hi] = domain;
+  const x = t => left + (t - lo) / (hi - lo) * (W - left - right);
+  const clipId = "plot-clip";
+  const defs = el("defs", {}, svg);
+  const cp = el("clipPath", { id: clipId }, defs);
+  el("rect", { x: left, y: 0, width: W - left - right, height: H }, cp);
+  const plot = el("g", { "clip-path": `url(#${clipId})` }, svg);
+
+  // section bands
+  SECTION_NAMES.forEach(([name, s, e], i) => {
+    if (e <= lo || s >= hi) return;
+    if (i % 2 === 1) el("rect", { class: "band", x: x(Math.max(s, lo)), y: top - 6, width: x(Math.min(e, hi)) - x(Math.max(s, lo)), height: H - top - axisH + 6 }, plot);
+    const label = el("text", { class: "band-label", x: x(Math.max(s, lo)) + 6, y: 14 }, plot);
+    label.textContent = name;
+  });
+
+  // ticks
+  const span = hi - lo;
+  const step = [5, 10, 15, 30, 60].find(s => span / s <= 12) || 60;
+  const axis = el("g", { class: "axis" }, svg);
+  for (let t = Math.ceil(lo / step) * step; t <= hi + 1e-6; t += step) {
+    el("line", { class: "grid", x1: x(t), x2: x(t), y1: top - 6, y2: H - axisH }, plot);
+    const tx = el("text", { x: x(t), y: H - 8, "text-anchor": "middle" }, axis);
+    tx.textContent = fmtTick(t);
+  }
+
+  LANES.forEach((lane, i) => {
+    const y = top + i * (laneH + gap);
+    const name = el("text", { x: 0, y: y + laneH / 2 + 4 }, svg);
+    name.textContent = lane.name;
+    if (lane.key === "gt") {
+      DATA.gt.forEach(([s, e], k) => {
+        if (e < lo || s > hi) return;
+        el("rect", { class: "seg-gt", x: x(s), y: y + 4, width: Math.max(1.5, x(e) - x(s) - 1), height: laneH - 8, rx: 2 }, plot);
+        const h = el("rect", { class: "hit", x: x(s) - 2, y, width: x(e) - x(s) + 4, height: laneH }, plot);
+        h.addEventListener("mousemove", ev => showTip(ev, `<b>真值回合 ${k + 1}/${DATA.gt.length}</b><br>${fmt(s)}–${fmt(e)} · ${(e - s).toFixed(1)}s`));
+        h.addEventListener("mouseleave", () => tip.hidden = true);
+      });
+      return;
+    }
+    const clips = DATA.tools[lane.key] || [];
+    if (!clips.length) {
+      const t = el("text", { class: "empty", x: left + 8, y: y + laneH / 2 + 4 }, svg);
+      t.textContent = "无输出（未拿到模型权重，回退模式识别出 0 个回合）";
+      return;
+    }
+    clips.forEach(([s, e], k) => {
+      if (e < lo || s > hi) return;
+      const parts = splitClip(s, e);
+      parts.forEach(([a, b, inside]) => {
+        el("rect", { class: inside ? "seg-in" : "seg-dead", x: x(a), y: y, width: Math.max(0.8, x(b) - x(a)), height: laneH }, plot);
+      });
+      const outline = el("rect", { class: "outline", x: x(s), y, width: Math.max(1, x(e) - x(s) - 1), height: laneH, fill: "none", rx: 2 }, plot);
+      const dead = parts.filter(p => !p[2]).reduce((acc, p) => acc + p[1] - p[0], 0);
+      const h = el("rect", { class: "hit", x: x(s), y, width: Math.max(4, x(e) - x(s)), height: laneH }, plot);
+      h.addEventListener("mousemove", ev => { outline.classList.add("on"); showTip(ev, `<b>${lane.name} · 片段 ${k + 1}/${clips.length}</b><br>原片 ${fmt(s)}–${fmt(e)} · ${(e - s).toFixed(1)}s<br>其中死球 ${dead.toFixed(1)}s`); });
+      h.addEventListener("mouseleave", () => { outline.classList.remove("on"); tip.hidden = true; });
+    });
+  });
+}
+
+// range buttons: full video + each section
+const controls = document.querySelector(".controls");
+SECTION_NAMES.forEach(([name, s, e], i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "r-" + i; b.textContent = name;
+  b.dataset.lo = s; b.dataset.hi = e; b.setAttribute("aria-pressed", "false");
+  controls.appendChild(b);
+});
+controls.addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  controls.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  domain = [Number(b.dataset.lo), Number(b.dataset.hi)];
+  tip.hidden = true; render();
+});
+new ResizeObserver(() => render()).observe(scroll);
+render();
+</script>

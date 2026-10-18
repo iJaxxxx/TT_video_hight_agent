@@ -1,0 +1,480 @@
+{
+ "ground_truth": {
+  "labeled_frames": 1103,
+  "rallies": 61,
+  "rally_seconds": 266.5,
+  "intervals": [
+   [
+    2.75,
+    10.75
+   ],
+   [
+    14.75,
+    18.25
+   ],
+   [
+    22.75,
+    25.25
+   ],
+   [
+    27.75,
+    33.25
+   ],
+   [
+    37.25,
+    40.25
+   ],
+   [
+    46.25,
+    49.75
+   ],
+   [
+    66.75,
+    70.75
+   ],
+   [
+    76.75,
+    79.75
+   ],
+   [
+    83.75,
+    86.75
+   ],
+   [
+    95.25,
+    107.75
+   ],
+   [
+    113.75,
+    116.25
+   ],
+   [
+    127.25,
+    129.25
+   ],
+   [
+    131.25,
+    135.25
+   ],
+   [
+    140.75,
+    142.75
+   ],
+   [
+    143.75,
+    145.75
+   ],
+   [
+    146.75,
+    148.75
+   ],
+   [
+    150.75,
+    152.75
+   ],
+   [
+    157.25,
+    159.25
+   ],
+   [
+    160.25,
+    162.25
+   ],
+   [
+    163.75,
+    166.25
+   ],
+   [
+    174.75,
+    176.75
+   ],
+   [
+    177.25,
+    179.25
+   ],
+   [
+    179.75,
+    184.25
+   ],
+   [
+    184.75,
+    191.75
+   ],
+   [
+    192.25,
+    197.25
+   ],
+   [
+    206.25,
+    208.75
+   ],
+   [
+    210.75,
+    215.25
+   ],
+   [
+    215.75,
+    217.25
+   ],
+   [
+    218.75,
+    223.75
+   ],
+   [
+    225.25,
+    231.75
+   ],
+   [
+    232.25,
+    237.25
+   ],
+   [
+    239.25,
+    242.75
+   ],
+   [
+    267.25,
+    269.75
+   ],
+   [
+    271.25,
+    276.25
+   ],
+   [
+    278.75,
+    281.75
+   ],
+   [
+    288.25,
+    293.75
+   ],
+   [
+    294.25,
+    304.75
+   ],
+   [
+    310.75,
+    312.75
+   ],
+   [
+    313.25,
+    317.25
+   ],
+   [
+    318.25,
+    320.75
+   ],
+   [
+    330.75,
+    333.75
+   ],
+   [
+    336.75,
+    339.75
+   ],
+   [
+    341.75,
+    347.25
+   ],
+   [
+    347.75,
+    350.75
+   ],
+   [
+    355.75,
+    360.25
+   ],
+   [
+    363.25,
+    367.75
+   ],
+   [
+    369.75,
+    372.75
+   ],
+   [
+    379.75,
+    388.75
+   ],
+   [
+    396.25,
+    408.75
+   ],
+   [
+    415.25,
+    417.75
+   ],
+   [
+    451.25,
+    455.75
+   ],
+   [
+    459.25,
+    463.25
+   ],
+   [
+    464.25,
+    467.75
+   ],
+   [
+    470.75,
+    473.75
+   ],
+   [
+    475.75,
+    481.75
+   ],
+   [
+    488.75,
+    499.25
+   ],
+   [
+    502.75,
+    510.25
+   ],
+   [
+    512.75,
+    516.75
+   ],
+   [
+    522.25,
+    525.75
+   ],
+   [
+    527.25,
+    539.75
+   ],
+   [
+    540.25,
+    541.75
+   ]
+  ]
+ },
+ "tools": {
+  "ours (audio)": {
+   "clips": 37,
+   "kept_s": 104.8,
+   "kept_pct": 19.0,
+   "rally_recall": 0.541,
+   "long_rally_recall": 0.714,
+   "clip_precision": 1.0,
+   "time_coverage": 0.34,
+   "dead_time_kept_s": 14.3,
+   "clips_merging_2plus_rallies": 6,
+   "rallies_split_across_clips": 8,
+   "raw_intervals": 37,
+   "runtime_s": 6.0,
+   "top5_hits_longest5_gt": 2,
+   "by_section": {
+    "对打 0:00–2:07": {
+     "rally_recall": 0.545,
+     "time_coverage": 0.404,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 1.2,
+     "kept_s": 21.8
+    },
+    "发球-接发练习 2:07–3:15": {
+     "rally_recall": 0.286,
+     "time_coverage": 0.069,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 2.8,
+     "kept_s": 5.6
+    },
+    "教练喂球 3:15–6:15": {
+     "rally_recall": 0.545,
+     "time_coverage": 0.277,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 4.3,
+     "kept_s": 29.2
+    },
+    "对打 6:15–9:11": {
+     "rally_recall": 0.786,
+     "time_coverage": 0.499,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 6.1,
+     "kept_s": 48.3
+    }
+   }
+  },
+  "TTLab": {
+   "clips": 40,
+   "kept_s": 325.7,
+   "kept_pct": 59.1,
+   "rally_recall": 0.852,
+   "long_rally_recall": 0.786,
+   "clip_precision": 0.875,
+   "time_coverage": 0.729,
+   "dead_time_kept_s": 131.4,
+   "clips_merging_2plus_rallies": 12,
+   "rallies_split_across_clips": 0,
+   "raw_intervals": 40,
+   "runtime_s": 34.7,
+   "top5_hits_longest5_gt": 0,
+   "by_section": {
+    "对打 0:00–2:07": {
+     "rally_recall": 1.0,
+     "time_coverage": 0.975,
+     "clip_precision": 0.818,
+     "dead_time_kept_s": 35.1,
+     "kept_s": 84.9
+    },
+    "发球-接发练习 2:07–3:15": {
+     "rally_recall": 0.929,
+     "time_coverage": 0.724,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 15.6,
+     "kept_s": 45.3
+    },
+    "教练喂球 3:15–6:15": {
+     "rally_recall": 0.818,
+     "time_coverage": 0.639,
+     "clip_precision": 0.909,
+     "dead_time_kept_s": 36.6,
+     "kept_s": 94.1
+    },
+    "对打 6:15–9:11": {
+     "rally_recall": 0.714,
+     "time_coverage": 0.679,
+     "clip_precision": 0.75,
+     "dead_time_kept_s": 44.0,
+     "kept_s": 101.4
+    }
+   }
+  },
+  "TTcut 落台": {
+   "clips": 13,
+   "kept_s": 80.6,
+   "kept_pct": 14.6,
+   "rally_recall": 0.246,
+   "long_rally_recall": 0.429,
+   "clip_precision": 1.0,
+   "time_coverage": 0.245,
+   "dead_time_kept_s": 15.4,
+   "clips_merging_2plus_rallies": 2,
+   "rallies_split_across_clips": 0,
+   "raw_intervals": 13,
+   "runtime_s": 833.7,
+   "top5_hits_longest5_gt": 0,
+   "by_section": {
+    "对打 0:00–2:07": {
+     "rally_recall": 0.273,
+     "time_coverage": 0.322,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 4.2,
+     "kept_s": 20.7
+    },
+    "发球-接发练习 2:07–3:15": {
+     "rally_recall": 0.0,
+     "time_coverage": 0.0,
+     "clip_precision": null,
+     "dead_time_kept_s": 0,
+     "kept_s": 0
+    },
+    "教练喂球 3:15–6:15": {
+     "rally_recall": 0.364,
+     "time_coverage": 0.34,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 6.3,
+     "kept_s": 36.9
+    },
+    "对打 6:15–9:11": {
+     "rally_recall": 0.286,
+     "time_coverage": 0.216,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 4.8,
+     "kept_s": 23.0
+    }
+   }
+  },
+  "TTcut 连续运动": {
+   "clips": 27,
+   "kept_s": 301.8,
+   "kept_pct": 54.8,
+   "rally_recall": 0.77,
+   "long_rally_recall": 0.857,
+   "clip_precision": 0.889,
+   "time_coverage": 0.765,
+   "dead_time_kept_s": 97.9,
+   "clips_merging_2plus_rallies": 12,
+   "rallies_split_across_clips": 1,
+   "raw_intervals": 39,
+   "runtime_s": 564.5,
+   "top5_hits_longest5_gt": 1,
+   "by_section": {
+    "对打 0:00–2:07": {
+     "rally_recall": 0.182,
+     "time_coverage": 0.145,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 1.4,
+     "kept_s": 8.8
+    },
+    "发球-接发练习 2:07–3:15": {
+     "rally_recall": 0.857,
+     "time_coverage": 0.775,
+     "clip_precision": 1.0,
+     "dead_time_kept_s": 20.5,
+     "kept_s": 52.3
+    },
+    "教练喂球 3:15–6:15": {
+     "rally_recall": 0.864,
+     "time_coverage": 0.869,
+     "clip_precision": 0.909,
+     "dead_time_kept_s": 36.1,
+     "kept_s": 114.3
+    },
+    "对打 6:15–9:11": {
+     "rally_recall": 1.0,
+     "time_coverage": 0.998,
+     "clip_precision": 0.75,
+     "dead_time_kept_s": 42.1,
+     "kept_s": 126.4
+    }
+   }
+  },
+  "PingPongVision (CV回退)": {
+   "clips": 0,
+   "kept_s": 0,
+   "kept_pct": 0.0,
+   "rally_recall": 0.0,
+   "long_rally_recall": 0.0,
+   "clip_precision": null,
+   "time_coverage": 0.0,
+   "dead_time_kept_s": 0,
+   "clips_merging_2plus_rallies": 0,
+   "rallies_split_across_clips": 0,
+   "raw_intervals": 0,
+   "runtime_s": 239.4,
+   "top5_hits_longest5_gt": null,
+   "by_section": {
+    "对打 0:00–2:07": {
+     "rally_recall": 0.0,
+     "time_coverage": 0.0,
+     "clip_precision": null,
+     "dead_time_kept_s": 0,
+     "kept_s": 0
+    },
+    "发球-接发练习 2:07–3:15": {
+     "rally_recall": 0.0,
+     "time_coverage": 0.0,
+     "clip_precision": null,
+     "dead_time_kept_s": 0,
+     "kept_s": 0
+    },
+    "教练喂球 3:15–6:15": {
+     "rally_recall": 0.0,
+     "time_coverage": 0.0,
+     "clip_precision": null,
+     "dead_time_kept_s": 0,
+     "kept_s": 0
+    },
+    "对打 6:15–9:11": {
+     "rally_recall": 0.0,
+     "time_coverage": 0.0,
+     "clip_precision": null,
+     "dead_time_kept_s": 0,
+     "kept_s": 0
+    }
+   }
+  }
+ }
+}

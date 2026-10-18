@@ -1,0 +1,1824 @@
+{
+ "tool": "TTcut",
+ "method": "bounce_events",
+ "runtime_s": 833.68221783638,
+ "event": {
+  "type": "result",
+  "task_id": "337ae344-4f59-4894-a54e-4cf10854e3b3",
+  "data": {
+   "schema_version": 2,
+   "video": {
+    "path": "/private/tmp/claude-501/-Users-bytedance-Desktop-code-TT-video-hight-agent/4eaa9269-4c65-4760-a92a-05382c7058da/scratchpad/input/IMG_6921_a0.mov",
+    "duration_seconds": 551.3050000000002,
+    "width": 1920,
+    "height": 1080,
+    "fps": 59.965183962862895,
+    "variable_frame_rate": false,
+    "video_codec": "unknown",
+    "audio_codec": null,
+    "container": "mov",
+    "frame_count": 33063
+   },
+   "rallies": [
+    {
+     "id": "rally_001",
+     "index": 1,
+     "start_time_seconds": 3.785,
+     "end_time_seconds": 8.638333,
+     "bounce_count": 6
+    },
+    {
+     "id": "rally_002",
+     "index": 2,
+     "start_time_seconds": 15.825,
+     "end_time_seconds": 17.608333,
+     "bounce_count": 2
+    },
+    {
+     "id": "rally_003",
+     "index": 3,
+     "start_time_seconds": 102.965,
+     "end_time_seconds": 103.481667,
+     "bounce_count": 2
+    },
+    {
+     "id": "rally_004",
+     "index": 4,
+     "start_time_seconds": 219.968333,
+     "end_time_seconds": 220.585,
+     "bounce_count": 2
+    },
+    {
+     "id": "rally_005",
+     "index": 5,
+     "start_time_seconds": 273.576667,
+     "end_time_seconds": 275.01,
+     "bounce_count": 3
+    },
+    {
+     "id": "rally_006",
+     "index": 6,
+     "start_time_seconds": 298.771667,
+     "end_time_seconds": 299.271667,
+     "bounce_count": 2
+    },
+    {
+     "id": "rally_007",
+     "index": 7,
+     "start_time_seconds": 311.561667,
+     "end_time_seconds": 315.663333,
+     "bounce_count": 4
+    },
+    {
+     "id": "rally_008",
+     "index": 8,
+     "start_time_seconds": 344.176667,
+     "end_time_seconds": 346.793333,
+     "bounce_count": 3
+    },
+    {
+     "id": "rally_009",
+     "index": 9,
+     "start_time_seconds": 366.053333,
+     "end_time_seconds": 366.67,
+     "bounce_count": 2
+    },
+    {
+     "id": "rally_010",
+     "index": 10,
+     "start_time_seconds": 386.778333,
+     "end_time_seconds": 388.28,
+     "bounce_count": 3
+    },
+    {
+     "id": "rally_011",
+     "index": 11,
+     "start_time_seconds": 404.386667,
+     "end_time_seconds": 405.053333,
+     "bounce_count": 2
+    },
+    {
+     "id": "rally_012",
+     "index": 12,
+     "start_time_seconds": 476.82,
+     "end_time_seconds": 478.338333,
+     "bounce_count": 3
+    },
+    {
+     "id": "rally_013",
+     "index": 13,
+     "start_time_seconds": 514.305,
+     "end_time_seconds": 515.655,
+     "bounce_count": 2
+    }
+   ],
+   "rally_recognition": {
+    "method": "bounce_events",
+    "maximum_gap_seconds": 3.0,
+    "minimum_bounce_count": 2
+   },
+   "calibration": {
+    "video_width": 1920,
+    "video_height": 1080,
+    "points": {
+     "top_left": [
+      861.0999755859375,
+      701.0178833007812
+     ],
+     "top_right": [
+      1264.300048828125,
+      715.4821166992188
+     ],
+     "bottom_right": [
+      1009.9000244140625,
+      855.3035888671875
+     ],
+     "bottom_left": [
+      688.2999877929688,
+      840.8392944335938
+     ]
+    }
+   },
+   "model_provenance": {
+    "profile": "blurball_v1",
+    "component_version": "1.0.0",
+    "roi": {
+     "x": 627,
+     "y": 468,
+     "width": 747,
+     "height": 408
+    },
+    "main_input": {
+     "width": 256,
+     "height": 144
+    },
+    "aux_input": null,
+    "detection": {
+     "confidence_threshold": 0.7,
+     "step": 3,
+     "maximum_displacement_pixels": 100.0,
+     "landing_region": "expanded_table"
+    },
+    "analysis": {
+     "schema_version": 2,
+     "mode": "full",
+     "stages": [
+      {
+       "name": "full",
+       "confidence_threshold": 0.7,
+       "window_size": 3,
+       "window_stride": 3,
+       "retained_output": "all_window_frames"
+      }
+     ]
+    }
+   },
+   "bounce_times_seconds": [
+    3.785,
+    5.953333,
+    6.42,
+    6.953333,
+    7.755,
+    8.638333,
+    15.825,
+    17.608333,
+    30.365,
+    78.903333,
+    84.923333,
+    97.928333,
+    102.965,
+    103.481667,
+    114.986667,
+    147.968333,
+    151.653333,
+    183.451667,
+    195.941667,
+    219.968333,
+    220.585,
+    226.321667,
+    273.576667,
+    274.61,
+    275.01,
+    280.796667,
+    288.4,
+    298.771667,
+    299.271667,
+    311.561667,
+    314.328333,
+    314.728333,
+    315.663333,
+    344.176667,
+    345.043333,
+    346.793333,
+    350.128333,
+    366.053333,
+    366.67,
+    381.526667,
+    386.778333,
+    387.846667,
+    388.28,
+    399.385,
+    404.386667,
+    405.053333,
+    435.068333,
+    452.56,
+    460.68,
+    476.82,
+    477.871667,
+    478.338333,
+    492.176667,
+    496.513333,
+    508.785,
+    514.305,
+    515.655
+   ],
+   "table_analysis": {
+    "schema_version": 2,
+    "model": {
+     "id": "table_analyze",
+     "filename": "table_analyze.pt",
+     "checkpoint_identifier": "mn:segformerpp_b2-hs:12.00-lr:1.00e-03-dn:tthq-mp:False-bs:04-exp:None-08302025-012958"
+    },
+    "device": "cpu",
+    "model_load_seconds": 0.15769920899765566,
+    "video_info": {
+     "width": 1920,
+     "height": 1080,
+     "fps": 59.965183962862895,
+     "metadata_frame_count": 33069,
+     "decoded_frame_count": 11,
+     "duration_seconds": 551.306667,
+     "sampling_seconds": 0.8320847079739906,
+     "seek_count": 11,
+     "copied_frame_count": 0,
+     "sample_count": 11
+    },
+    "sampling": [
+     {
+      "label": "sample_01",
+      "sample_ratio": 0.05,
+      "frame_index": 1653,
+      "time_seconds": 27.563333333333336,
+      "target_frame_index": 1653,
+      "target_time_seconds": 27.565995645468565,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.9945815830142237,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 860.125,
+        "activation": 0.941262423992157,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.04137122631073,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 697.9000244140625,
+        "y": 749.2321166992188,
+        "activation": 0.9152169227600098,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 0.9559756517410278,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.6445000767707825,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 837.0999755859375,
+        "y": 657.625,
+        "activation": 0.7866306304931641,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 654.7000122070312,
+        "y": 744.4107055664062,
+        "activation": 0.7898078560829163,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1225.9000244140625,
+        "y": 758.875,
+        "activation": 0.8402031064033508,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 754.0535888671875,
+        "activation": 0.891674280166626,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 654.7000122070312,
+        "y": 701.0178833007812,
+        "activation": 0.793796181678772,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1221.0999755859375,
+        "y": 710.6607055664062,
+        "activation": 0.9193887710571289,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 683.5,
+        "y": 840.8392944335938,
+        "activation": 0.9961137175559998,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 568.2999877929688,
+        "y": 257.4464416503906,
+        "activation": 0.6723427772521973,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_02",
+      "sample_ratio": 0.14,
+      "frame_index": 4630,
+      "time_seconds": 77.20333333333333,
+      "target_frame_index": 4630,
+      "target_time_seconds": 77.21146995675709,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.8831527080037631,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.920759379863739,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.0579187870025635,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 697.9000244140625,
+        "y": 749.2321166992188,
+        "activation": 0.9380852580070496,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 0.9486732482910156,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 395.5,
+        "y": 826.375,
+        "activation": 0.7995566129684448,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 837.0999755859375,
+        "y": 657.625,
+        "activation": 0.7729173302650452,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 654.7000122070312,
+        "y": 744.4107055664062,
+        "activation": 0.7899024486541748,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1225.9000244140625,
+        "y": 763.6964111328125,
+        "activation": 0.973641037940979,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 754.0535888671875,
+        "activation": 0.908301830291748,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 654.7000122070312,
+        "y": 701.0178833007812,
+        "activation": 0.803388774394989,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1221.0999755859375,
+        "y": 705.8392944335938,
+        "activation": 0.9847332835197449,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 683.5,
+        "y": 840.8392944335938,
+        "activation": 1.029604196548462,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 1081.9000244140625,
+        "y": 710.6607055664062,
+        "activation": 0.7889410853385925,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_03",
+      "sample_ratio": 0.23,
+      "frame_index": 7606,
+      "time_seconds": 126.84166666666667,
+      "target_frame_index": 7606,
+      "target_time_seconds": 126.84026792464242,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 1.0360902909887955,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 395.5,
+        "y": 826.375,
+        "activation": 0.9695563316345215,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.0544297695159912,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 697.9000244140625,
+        "y": 749.2321166992188,
+        "activation": 0.9281473755836487,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 1.057098150253296,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 395.5,
+        "y": 826.375,
+        "activation": 0.7813987135887146,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 837.0999755859375,
+        "y": 657.625,
+        "activation": 0.7487912774085999,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 654.7000122070312,
+        "y": 744.4107055664062,
+        "activation": 0.7806764245033264,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1225.9000244140625,
+        "y": 763.6964111328125,
+        "activation": 0.9407086968421936,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 754.0535888671875,
+        "activation": 0.9120116233825684,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 654.7000122070312,
+        "y": 701.0178833007812,
+        "activation": 0.8200618624687195,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1221.0999755859375,
+        "y": 710.6607055664062,
+        "activation": 0.9351997971534729,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 683.5,
+        "y": 840.8392944335938,
+        "activation": 1.03006112575531,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 1081.9000244140625,
+        "y": 710.6607055664062,
+        "activation": 0.6881431341171265,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_04",
+      "sample_ratio": 0.32,
+      "frame_index": 10582,
+      "time_seconds": 176.465,
+      "target_frame_index": 10582,
+      "target_time_seconds": 176.46906589252774,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.779825166973751,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.9892839193344116,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.0062874555587769,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 697.9000244140625,
+        "y": 749.2321166992188,
+        "activation": 0.9104649424552917,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 0.9224693179130554,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.7137068510055542,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 1259.5,
+        "y": 715.4821166992188,
+        "activation": 0.9639623761177063,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 654.7000122070312,
+        "y": 744.4107055664062,
+        "activation": 0.7837502360343933,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1235.5,
+        "y": 758.875,
+        "activation": 0.8134724497795105,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 754.0535888671875,
+        "activation": 0.8257964849472046,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 654.7000122070312,
+        "y": 701.0178833007812,
+        "activation": 0.8044994473457336,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1221.0999755859375,
+        "y": 710.6607055664062,
+        "activation": 0.7063941359519958,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 683.5,
+        "y": 840.8392944335938,
+        "activation": 0.9384761452674866,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 1043.5,
+        "y": 705.8392944335938,
+        "activation": 0.6653939485549927,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_05",
+      "sample_ratio": 0.41,
+      "frame_index": 13558,
+      "time_seconds": 226.10500000000002,
+      "target_frame_index": 13558,
+      "target_time_seconds": 226.09786386041307,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.7320755420369096,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.9563553333282471,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.0111477375030518,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 702.7000122070312,
+        "y": 749.2321166992188,
+        "activation": 0.9226356744766235,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 0.965092122554779,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 390.70001220703125,
+        "y": 821.5535888671875,
+        "activation": 0.6742713451385498,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 1264.300048828125,
+        "y": 715.4821166992188,
+        "activation": 0.892672061920166,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 654.7000122070312,
+        "y": 744.4107055664062,
+        "activation": 0.7984508872032166,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1230.699951171875,
+        "y": 763.6964111328125,
+        "activation": 0.9461699724197388,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 758.875,
+        "activation": 0.7541335821151733,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 659.5,
+        "y": 701.0178833007812,
+        "activation": 0.7791221141815186,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1221.0999755859375,
+        "y": 710.6607055664062,
+        "activation": 0.9365212917327881,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 688.2999877929688,
+        "y": 840.8392944335938,
+        "activation": 1.0053763389587402,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 1081.9000244140625,
+        "y": 705.8392944335938,
+        "activation": 0.6843199133872986,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_06",
+      "sample_ratio": 0.5,
+      "frame_index": 16534,
+      "time_seconds": 275.72833333333335,
+      "target_frame_index": 16534,
+      "target_time_seconds": 275.7266618282984,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.6674473750172183,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.949737548828125,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.0278178453445435,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 702.7000122070312,
+        "y": 749.2321166992188,
+        "activation": 0.9151477813720703,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 1.0243722200393677,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.6449775099754333,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 1264.300048828125,
+        "y": 715.4821166992188,
+        "activation": 0.9036897420883179,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 659.5,
+        "y": 744.4107055664062,
+        "activation": 0.8058656454086304,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1230.699951171875,
+        "y": 763.6964111328125,
+        "activation": 0.9241770505905151,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 758.875,
+        "activation": 0.7843491435050964,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 659.5,
+        "y": 701.0178833007812,
+        "activation": 0.7848697900772095,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1225.9000244140625,
+        "y": 710.6607055664062,
+        "activation": 0.8949081897735596,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 688.2999877929688,
+        "y": 840.8392944335938,
+        "activation": 0.9977385401725769,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 1081.9000244140625,
+        "y": 710.6607055664062,
+        "activation": 0.690317690372467,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_07",
+      "sample_ratio": 0.59,
+      "frame_index": 19510,
+      "time_seconds": 325.35,
+      "target_frame_index": 19510,
+      "target_time_seconds": 325.3554597961837,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.6352470410056412,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.9988327026367188,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.9666144847869873,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 702.7000122070312,
+        "y": 749.2321166992188,
+        "activation": 0.9157986044883728,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 1.0278500318527222,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 693.0999755859375,
+        "y": 836.0178833007812,
+        "activation": 0.9503651261329651,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 1273.9000244140625,
+        "y": 710.6607055664062,
+        "activation": 0.8471658825874329,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 313.8999938964844,
+        "y": 705.8392944335938,
+        "activation": 0.9394217729568481,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1230.699951171875,
+        "y": 763.6964111328125,
+        "activation": 0.9527907371520996,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 758.875,
+        "activation": 0.7699490189552307,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 313.8999938964844,
+        "y": 667.2678833007812,
+        "activation": 1.0128709077835083,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 318.70001220703125,
+        "y": 667.2678833007812,
+        "activation": 0.6412979364395142,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 131.5,
+        "y": 672.0892944335938,
+        "activation": 0.8215565085411072,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 505.8999938964844,
+        "y": 339.41070556640625,
+        "activation": 0.8510977029800415,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_08",
+      "sample_ratio": 0.68,
+      "frame_index": 22486,
+      "time_seconds": 374.99,
+      "target_frame_index": 22486,
+      "target_time_seconds": 374.98425776406907,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.6646532919839956,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.953023374080658,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.032028317451477,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 702.7000122070312,
+        "y": 749.2321166992188,
+        "activation": 0.9204220175743103,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 0.9949992895126343,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.6345514059066772,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 837.0999755859375,
+        "y": 657.625,
+        "activation": 0.7906116247177124,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 659.5,
+        "y": 744.4107055664062,
+        "activation": 0.7995408773422241,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1230.699951171875,
+        "y": 763.6964111328125,
+        "activation": 0.9562227129936218,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 179.5,
+        "y": 416.5535583496094,
+        "activation": 0.7659516930580139,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 659.5,
+        "y": 701.0178833007812,
+        "activation": 0.7917062640190125,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1225.9000244140625,
+        "y": 705.8392944335938,
+        "activation": 0.9758275151252747,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 688.2999877929688,
+        "y": 840.8392944335938,
+        "activation": 1.0044424533843994,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 1086.699951171875,
+        "y": 710.6607055664062,
+        "activation": 0.7107216715812683,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_09",
+      "sample_ratio": 0.77,
+      "frame_index": 25462,
+      "time_seconds": 424.61333333333334,
+      "target_frame_index": 25462,
+      "target_time_seconds": 424.6130557319544,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.6940649999887682,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.9505939483642578,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.0336509943008423,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 702.7000122070312,
+        "y": 749.2321166992188,
+        "activation": 0.9375391006469727,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 1.0431050062179565,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.6235578656196594,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 1264.300048828125,
+        "y": 715.4821166992188,
+        "activation": 0.9024067521095276,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 659.5,
+        "y": 744.4107055664062,
+        "activation": 0.8131418228149414,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1230.699951171875,
+        "y": 763.6964111328125,
+        "activation": 0.9162529110908508,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 758.875,
+        "activation": 0.7257099747657776,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 659.5,
+        "y": 701.0178833007812,
+        "activation": 0.7879019975662231,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1225.9000244140625,
+        "y": 710.6607055664062,
+        "activation": 0.9701403975486755,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 688.2999877929688,
+        "y": 840.8392944335938,
+        "activation": 0.9939502477645874,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 1081.9000244140625,
+        "y": 710.6607055664062,
+        "activation": 0.6996504068374634,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_10",
+      "sample_ratio": 0.86,
+      "frame_index": 28438,
+      "time_seconds": 474.2366666666667,
+      "target_frame_index": 28438,
+      "target_time_seconds": 474.24185369983974,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.6963817500509322,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 573.0999755859375,
+        "y": 836.0178833007812,
+        "activation": 0.8852695822715759,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.0404877662658691,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 702.7000122070312,
+        "y": 749.2321166992188,
+        "activation": 0.9325408935546875,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 0.9768569469451904,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.5981205701828003,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 1264.300048828125,
+        "y": 715.4821166992188,
+        "activation": 0.8523590564727783,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 654.7000122070312,
+        "y": 744.4107055664062,
+        "activation": 0.8513258099555969,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1230.699951171875,
+        "y": 763.6964111328125,
+        "activation": 0.9594531655311584,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 754.0535888671875,
+        "activation": 0.8211289048194885,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 313.8999938964844,
+        "y": 667.2678833007812,
+        "activation": 0.9774928689002991,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1221.0999755859375,
+        "y": 710.6607055664062,
+        "activation": 0.993208646774292,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 688.2999877929688,
+        "y": 840.8392944335938,
+        "activation": 1.0075010061264038,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 568.2999877929688,
+        "y": 252.625,
+        "activation": 0.65867018699646,
+        "valid": true
+       }
+      ]
+     },
+     {
+      "label": "sample_11",
+      "sample_ratio": 0.95,
+      "frame_index": 31415,
+      "time_seconds": 523.8916666666667,
+      "target_frame_index": 31415,
+      "target_time_seconds": 523.8873280111283,
+      "seek_method": "frame",
+      "position_error_seconds": 0.0,
+      "forward_seconds": 0.6402851249440573,
+      "keypoints": [
+       {
+        "keypoint": 1,
+        "label": "close_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.8563424348831177,
+        "valid": true
+       },
+       {
+        "keypoint": 2,
+        "label": "close_right",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 1.047743558883667,
+        "valid": true
+       },
+       {
+        "keypoint": 3,
+        "label": "center_left",
+        "x": 702.7000122070312,
+        "y": 749.2321166992188,
+        "activation": 0.9539285898208618,
+        "valid": true
+       },
+       {
+        "keypoint": 4,
+        "label": "center_right",
+        "x": 1177.9000244140625,
+        "y": 758.875,
+        "activation": 0.9840006828308105,
+        "valid": true
+       },
+       {
+        "keypoint": 5,
+        "label": "far_left",
+        "x": 1009.9000244140625,
+        "y": 855.3035888671875,
+        "activation": 0.5599198937416077,
+        "valid": true
+       },
+       {
+        "keypoint": 6,
+        "label": "far_right",
+        "x": 837.0999755859375,
+        "y": 657.625,
+        "activation": 0.7721028923988342,
+        "valid": true
+       },
+       {
+        "keypoint": 7,
+        "label": "net_left_bottom",
+        "x": 659.5,
+        "y": 744.4107055664062,
+        "activation": 0.8452917337417603,
+        "valid": true
+       },
+       {
+        "keypoint": 8,
+        "label": "net_right_bottom",
+        "x": 1235.5,
+        "y": 763.6964111328125,
+        "activation": 1.002719521522522,
+        "valid": true
+       },
+       {
+        "keypoint": 9,
+        "label": "net_center_bottom",
+        "x": 913.9000244140625,
+        "y": 754.0535888671875,
+        "activation": 0.7232505083084106,
+        "valid": true
+       },
+       {
+        "keypoint": 10,
+        "label": "net_left_top",
+        "x": 659.5,
+        "y": 701.0178833007812,
+        "activation": 0.8036107420921326,
+        "valid": true
+       },
+       {
+        "keypoint": 11,
+        "label": "net_right_top",
+        "x": 1225.9000244140625,
+        "y": 705.8392944335938,
+        "activation": 0.9069172739982605,
+        "valid": true
+       },
+       {
+        "keypoint": 12,
+        "label": "close_center",
+        "x": 688.2999877929688,
+        "y": 840.8392944335938,
+        "activation": 0.9643767476081848,
+        "valid": true
+       },
+       {
+        "keypoint": 13,
+        "label": "far_center",
+        "x": 568.2999877929688,
+        "y": 257.4464416503906,
+        "activation": 0.6141605377197266,
+        "valid": true
+       }
+      ]
+     }
+    ],
+    "aggregation_rule": "temporal_peak_clusters_geometric_consensus",
+    "fixed_keypoints": [
+     {
+      "keypoint": 1,
+      "label": "close_left",
+      "valid": true,
+      "valid_candidate_count": 128,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 688.2999877929688,
+      "y": 840.8392944335938,
+      "activation": 0.5043102096427571
+     },
+     {
+      "keypoint": 2,
+      "label": "close_right",
+      "valid": true,
+      "valid_candidate_count": 109,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 1009.9000244140625,
+      "y": 855.3035888671875,
+      "activation": 1.0290452675385908
+     },
+     {
+      "keypoint": 3,
+      "label": "center_left",
+      "valid": true,
+      "valid_candidate_count": 99,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 702.7000122070312,
+      "y": 749.2321166992188,
+      "activation": 0.926357014612718
+     },
+     {
+      "keypoint": 4,
+      "label": "center_right",
+      "valid": true,
+      "valid_candidate_count": 78,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 1177.9000244140625,
+      "y": 758.875,
+      "activation": 0.990953878922896
+     },
+     {
+      "keypoint": 5,
+      "label": "far_left",
+      "valid": true,
+      "valid_candidate_count": 112,
+      "cluster_support": 7,
+      "selected_samples": [
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 861.0999755859375,
+      "y": 701.0178833007812,
+      "activation": 0.3002480332340513
+     },
+     {
+      "keypoint": 6,
+      "label": "far_right",
+      "valid": true,
+      "valid_candidate_count": 104,
+      "cluster_support": 10,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10"
+      ],
+      "x": 1264.300048828125,
+      "y": 715.4821166992188,
+      "activation": 0.7249098092317581
+     },
+     {
+      "keypoint": 7,
+      "label": "net_left_bottom",
+      "valid": true,
+      "valid_candidate_count": 73,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 654.7000122070312,
+      "y": 744.4107055664062,
+      "activation": 0.7940817800435153
+     },
+     {
+      "keypoint": 8,
+      "label": "net_right_bottom",
+      "valid": true,
+      "valid_candidate_count": 68,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 1230.699951171875,
+      "y": 763.6964111328125,
+      "activation": 0.9296192147515037
+     },
+     {
+      "keypoint": 9,
+      "label": "net_center_bottom",
+      "valid": true,
+      "valid_candidate_count": 53,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 913.9000244140625,
+      "y": 754.0535888671875,
+      "activation": 0.8039544820785522
+     },
+     {
+      "keypoint": 10,
+      "label": "net_left_top",
+      "valid": false,
+      "valid_candidate_count": 0,
+      "cluster_support": 0
+     },
+     {
+      "keypoint": 11,
+      "label": "net_right_top",
+      "valid": false,
+      "valid_candidate_count": 0,
+      "cluster_support": 0
+     },
+     {
+      "keypoint": 12,
+      "label": "close_center",
+      "valid": true,
+      "valid_candidate_count": 132,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 875.5,
+      "y": 855.3035888671875,
+      "activation": 0.5571599087931893
+     },
+     {
+      "keypoint": 13,
+      "label": "far_center",
+      "valid": true,
+      "valid_candidate_count": 132,
+      "cluster_support": 11,
+      "selected_samples": [
+       "sample_01",
+       "sample_02",
+       "sample_03",
+       "sample_04",
+       "sample_05",
+       "sample_06",
+       "sample_07",
+       "sample_08",
+       "sample_09",
+       "sample_10",
+       "sample_11"
+      ],
+      "x": 1081.9000244140625,
+      "y": 710.6607055664062,
+      "activation": 0.6741080392490734
+     }
+    ],
+    "consensus": {
+     "sample_count": 11,
+     "semantic_support": 11,
+     "score": 5.675693130354204,
+     "corner_candidate_counts": [
+      8,
+      8,
+      8,
+      8
+     ]
+    }
+   }
+  }
+ }
+}

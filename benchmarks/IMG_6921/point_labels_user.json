@@ -1,0 +1,6 @@
+{"annotator": "user",
+ "note": "用户 2026-10-11 确认：P10、P24 不算比赛分（练习），其余按子代理初判；P06/P15/P17 初判为未判定，保持不计。",
+ "points": [
+  {"point": "P10", "winner": "none", "how": "not_a_point", "confidence": "high", "evidence": "用户确认：练习，不算分"},
+  {"point": "P24", "winner": "none", "how": "not_a_point", "confidence": "high", "evidence": "用户确认：练习重发，不算分"}
+ ]}

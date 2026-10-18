@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+server/.venv/
+server/data/
+server/.env
+
+# App
+app/node_modules/
+app/.expo/
+app/dist/
+app/ios/
+app/android/
+
+# 本地工具
+.claude/
+.DS_Store
+
+# 视频文件不进仓库
+*.mov
+*.MOV
+*.mp4

@@ -1,0 +1,362 @@
+{
+ "tool": "TTcut",
+ "method": "continuous_visibility",
+ "runtime_s": 564.5323779582977,
+ "event": {
+  "type": "result",
+  "task_id": "9d4c3106-ce3b-44cc-8b11-ebe9ebaa9873",
+  "data": {
+   "schema_version": 2,
+   "video": {
+    "path": "/private/tmp/claude-501/-Users-bytedance-Desktop-code-TT-video-hight-agent/4eaa9269-4c65-4760-a92a-05382c7058da/scratchpad/input/IMG_6921_a0.mov",
+    "duration_seconds": 551.3050000000002,
+    "width": 1920,
+    "height": 1080,
+    "fps": 59.965183962862895,
+    "variable_frame_rate": false,
+    "video_codec": "unknown",
+    "audio_codec": null,
+    "container": "mov",
+    "frame_count": 33063
+   },
+   "rallies": [
+    {
+     "id": "rally_001",
+     "index": 1,
+     "start_time_seconds": 38.985,
+     "end_time_seconds": 39.901667
+    },
+    {
+     "id": "rally_002",
+     "index": 2,
+     "start_time_seconds": 101.898333,
+     "end_time_seconds": 102.815
+    },
+    {
+     "id": "rally_003",
+     "index": 3,
+     "start_time_seconds": 142.916667,
+     "end_time_seconds": 158.256667
+    },
+    {
+     "id": "rally_004",
+     "index": 4,
+     "start_time_seconds": 163.726667,
+     "end_time_seconds": 178.233333
+    },
+    {
+     "id": "rally_005",
+     "index": 5,
+     "start_time_seconds": 182.085,
+     "end_time_seconds": 197.975
+    },
+    {
+     "id": "rally_006",
+     "index": 6,
+     "start_time_seconds": 213.431667,
+     "end_time_seconds": 217.316667
+    },
+    {
+     "id": "rally_007",
+     "index": 7,
+     "start_time_seconds": 219.635,
+     "end_time_seconds": 221.035
+    },
+    {
+     "id": "rally_008",
+     "index": 8,
+     "start_time_seconds": 225.805,
+     "end_time_seconds": 227.355
+    },
+    {
+     "id": "rally_009",
+     "index": 9,
+     "start_time_seconds": 228.323333,
+     "end_time_seconds": 229.79
+    },
+    {
+     "id": "rally_010",
+     "index": 10,
+     "start_time_seconds": 235.508333,
+     "end_time_seconds": 236.86
+    },
+    {
+     "id": "rally_011",
+     "index": 11,
+     "start_time_seconds": 240.461667,
+     "end_time_seconds": 242.561667
+    },
+    {
+     "id": "rally_012",
+     "index": 12,
+     "start_time_seconds": 269.391667,
+     "end_time_seconds": 275.16
+    },
+    {
+     "id": "rally_013",
+     "index": 13,
+     "start_time_seconds": 280.38,
+     "end_time_seconds": 282.615
+    },
+    {
+     "id": "rally_014",
+     "index": 14,
+     "start_time_seconds": 288.366667,
+     "end_time_seconds": 295.436667
+    },
+    {
+     "id": "rally_015",
+     "index": 15,
+     "start_time_seconds": 298.188333,
+     "end_time_seconds": 306.291667
+    },
+    {
+     "id": "rally_016",
+     "index": 16,
+     "start_time_seconds": 311.26,
+     "end_time_seconds": 322.015
+    },
+    {
+     "id": "rally_017",
+     "index": 17,
+     "start_time_seconds": 342.408333,
+     "end_time_seconds": 350.245
+    },
+    {
+     "id": "rally_018",
+     "index": 18,
+     "start_time_seconds": 357.098333,
+     "end_time_seconds": 360.75
+    },
+    {
+     "id": "rally_019",
+     "index": 19,
+     "start_time_seconds": 364.051667,
+     "end_time_seconds": 367.203333
+    },
+    {
+     "id": "rally_020",
+     "index": 20,
+     "start_time_seconds": 370.555,
+     "end_time_seconds": 372.905
+    },
+    {
+     "id": "rally_021",
+     "index": 21,
+     "start_time_seconds": 380.21,
+     "end_time_seconds": 382.093333
+    },
+    {
+     "id": "rally_022",
+     "index": 22,
+     "start_time_seconds": 382.71,
+     "end_time_seconds": 385.711667
+    },
+    {
+     "id": "rally_023",
+     "index": 23,
+     "start_time_seconds": 387.53,
+     "end_time_seconds": 388.446667
+    },
+    {
+     "id": "rally_024",
+     "index": 24,
+     "start_time_seconds": 397.383333,
+     "end_time_seconds": 408.538333
+    },
+    {
+     "id": "rally_025",
+     "index": 25,
+     "start_time_seconds": 416.46,
+     "end_time_seconds": 418.043333
+    },
+    {
+     "id": "rally_026",
+     "index": 26,
+     "start_time_seconds": 434.835,
+     "end_time_seconds": 436.685
+    },
+    {
+     "id": "rally_027",
+     "index": 27,
+     "start_time_seconds": 441.536667,
+     "end_time_seconds": 442.588333
+    },
+    {
+     "id": "rally_028",
+     "index": 28,
+     "start_time_seconds": 447.156667,
+     "end_time_seconds": 449.141667
+    },
+    {
+     "id": "rally_029",
+     "index": 29,
+     "start_time_seconds": 453.31,
+     "end_time_seconds": 455.043333
+    },
+    {
+     "id": "rally_030",
+     "index": 30,
+     "start_time_seconds": 460.496667,
+     "end_time_seconds": 463.815
+    },
+    {
+     "id": "rally_031",
+     "index": 31,
+     "start_time_seconds": 465.398333,
+     "end_time_seconds": 469.316667
+    },
+    {
+     "id": "rally_032",
+     "index": 32,
+     "start_time_seconds": 472.335,
+     "end_time_seconds": 474.72
+    },
+    {
+     "id": "rally_033",
+     "index": 33,
+     "start_time_seconds": 476.436667,
+     "end_time_seconds": 481.656667
+    },
+    {
+     "id": "rally_034",
+     "index": 34,
+     "start_time_seconds": 489.86,
+     "end_time_seconds": 498.063333
+    },
+    {
+     "id": "rally_035",
+     "index": 35,
+     "start_time_seconds": 504.066667,
+     "end_time_seconds": 509.968333
+    },
+    {
+     "id": "rally_036",
+     "index": 36,
+     "start_time_seconds": 514.171667,
+     "end_time_seconds": 517.69
+    },
+    {
+     "id": "rally_037",
+     "index": 37,
+     "start_time_seconds": 523.275,
+     "end_time_seconds": 525.576667
+    },
+    {
+     "id": "rally_038",
+     "index": 38,
+     "start_time_seconds": 527.926667,
+     "end_time_seconds": 531.828333
+    },
+    {
+     "id": "rally_039",
+     "index": 39,
+     "start_time_seconds": 535.096667,
+     "end_time_seconds": 541.3
+    }
+   ],
+   "rally_recognition": {
+    "method": "continuous_visibility",
+    "detection_confidence_threshold": 0.3,
+    "start_visible_seconds": 0.2,
+    "end_invisible_seconds": 0.5,
+    "motion_filter": {
+     "minimum_horizontal_excursion_ratio": 0.032362459546925564,
+     "maximum_reversal_gap_seconds": 0.35,
+     "minimum_horizontal_to_vertical_range_ratio": 0.7,
+     "maximum_monotonic_vertical_reversals": 1,
+     "minimum_monotonic_horizontal_range_ratio": 0.32362459546925565,
+     "minimum_monotonic_duration_seconds": 0.6,
+     "short_vertical_filter_seconds": 1.2,
+     "maximum_short_vertical_range_ratio": 0.5,
+     "vertical_exchange_enabled": false,
+     "minimum_vertical_to_horizontal_range_ratio": 1.0,
+     "end_on_min_opposing_edge_balance": 0.85,
+     "end_on_min_screen_aspect_ratio": 2.0
+    },
+    "fragment_bridge": {
+     "maximum_gap_seconds": 1.5,
+     "maximum_boundary_displacement_ratio": 0.35,
+     "maximum_boundary_speed_ratio_per_second": 0.26
+    },
+    "inter_rally_fragment_filter": {
+     "side_on_views_only": true,
+     "minimum_candidate_seconds": 1.0,
+     "maximum_candidate_seconds": 6.0,
+     "maximum_expanded_table_ratio": 0.45,
+     "minimum_visible_run_count": 3,
+     "minimum_one_way_range_ratio": 0.55,
+     "maximum_sparse_visibility_ratio": 0.3,
+     "minimum_contiguous_flight_seconds": 0.15,
+     "minimum_coherent_reversal_ratio": 0.2,
+     "minimum_coherent_flight_displacement_ratio": 0.15,
+     "expanded_table_length_margin_cm": 35.0,
+     "expanded_table_width_margin_cm": 25.0,
+     "motion_refinement": {
+      "version": 5,
+      "minimum_motion_run_seconds": 0.15,
+      "minimum_horizontal_range_ratio": 0.05,
+      "minimum_speed_ratio_per_second": 0.35,
+      "reversal_range_ratio": 0.06,
+      "gap_minimum_motion_range_ratio": 0.04,
+      "gap_minimum_motion_support_ratio": 0.35,
+      "short_gap_seconds": 1.25,
+      "long_gap_seconds": 2.25,
+      "stationary_run_seconds": 0.5,
+      "boundary_context_seconds": 0.25
+     }
+    }
+   },
+   "calibration": {
+    "video_width": 1920,
+    "video_height": 1080,
+    "points": {
+     "top_left": [
+      861.0999755859375,
+      701.0178833007812
+     ],
+     "top_right": [
+      1264.300048828125,
+      715.4821166992188
+     ],
+     "bottom_right": [
+      1009.9000244140625,
+      855.3035888671875
+     ],
+     "bottom_left": [
+      688.2999877929688,
+      840.8392944335938
+     ]
+    }
+   },
+   "model_provenance": {
+    "profile": "blurball_v1",
+    "component_version": "1.0.0",
+    "roi": {
+     "x": 640,
+     "y": 480,
+     "width": 704,
+     "height": 416
+    },
+    "main_input": {
+     "width": 240,
+     "height": 144
+    },
+    "aux_input": null,
+    "analysis": {
+     "schema_version": 2,
+     "mode": "full",
+     "stages": [
+      {
+       "name": "full",
+       "confidence_threshold": 0.3,
+       "window_size": 3,
+       "window_stride": 3,
+       "retained_output": "all_window_frames"
+      }
+     ]
+    }
+   }
+  }
+ }
+}

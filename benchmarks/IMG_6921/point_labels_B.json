@@ -1,0 +1,103 @@
+{
+ "annotator": "B",
+ "points": [
+  {
+   "point": "P12",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "low",
+   "evidence": "388.25 student forehand crosses net to coach's right; 388.50 blurred ball low past coach's left leg with no stroke from coach; bounce on table not visible, coach and student then relax."
+  },
+  {
+   "point": "P13",
+   "winner": "coach",
+   "how": "student_error",
+   "confidence": "medium",
+   "evidence": "408.00 student forehand; 408.25 ball sitting on the net tape on student's side; 408.50+ nothing crosses, coach never moves, student relaxes."
+  },
+  {
+   "point": "P14",
+   "winner": "coach",
+   "how": "student_error",
+   "confidence": "low",
+   "evidence": "417.25 student short push at the net; 417.50 coach only reaches at table end, no real stroke; 418.00-418.50 ball bouncing on floor beside student near net post (likely push into net); fate not clearly visible."
+  },
+  {
+   "point": "P15",
+   "winner": "unclear",
+   "how": "unclear",
+   "confidence": "low",
+   "evidence": "454.00 student forehand toward coach; 454.25 ball (or a spare ball) at coach's left hip, coach makes no stroke 454.25-455.50; 455.75 coach feeds a ball back. Where the student's ball landed is not visible."
+  },
+  {
+   "point": "P16",
+   "winner": "coach",
+   "how": "student_error",
+   "confidence": "medium",
+   "evidence": "461.00 student's backhand at net pops the ball up; 461.25-461.50 coach crouches but no ball reaches his side; 461.75 ball falling in front of student on his side; 462.25 student catches it and tosses it to coach."
+  },
+  {
+   "point": "P17",
+   "winner": "unclear",
+   "how": "unclear",
+   "confidence": "low",
+   "evidence": "466.50 coach short ball at net; 467.00-467.75 student lunges and falls onto table (free hand on surface), ball low at net tape; coach makes no stroke; which side the ball dropped on is not resolvable."
+  },
+  {
+   "point": "P18",
+   "winner": "student",
+   "how": "coach_error",
+   "confidence": "medium",
+   "evidence": "473.00 student's ball clips the net tape and drops on coach's side; 473.75 coach reaches in; 474.00-474.25 ball still on coach's table under his paddle (no return); 474.75 coach picks it up."
+  },
+  {
+   "point": "P19",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "medium",
+   "evidence": "481.00 student forehand; 481.50 ball bounces on coach's half; 481.75 coach swings and ball passes below his paddle off the end; 482.00+ coach stops."
+  },
+  {
+   "point": "P20",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "low",
+   "evidence": "498.60 student forehand loop; 499.00 coach reaches to his right, blurred ball at near-right corner below table level, past paddle; 499.25+ both calm. Bounce not clearly seen."
+  },
+  {
+   "point": "P21",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "low",
+   "evidence": "509.50 student forehand; 510.00 coach block attempt at table end, blurred ball low beside table past him; 510.75-511.75 coach turns toward camera. Bounce not seen, could be wide."
+  },
+  {
+   "point": "P22",
+   "winner": "student",
+   "how": "coach_error",
+   "confidence": "low",
+   "evidence": "515.50 student forehand lands on coach's half at 515.75; 516.00 coach blocks; ball never seen again and student relaxes at 516.25 as if nothing came back. Fate of coach's block not visible."
+  },
+  {
+   "point": "P23",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "low",
+   "evidence": "524.60 student forehand; 524.75 ball crosses net; 525.00 coach reaches forward but ball is already below table height at near-left, past him; bounce not seen; 525.25+ coach drops paddle."
+  },
+  {
+   "point": "P24",
+   "winner": "unclear",
+   "how": "unclear",
+   "confidence": "low",
+   "evidence": "538.75 student lifts a high ball; 539.25 it bounces on coach's half near net; 539.75 coach catches it with his left hand instead of playing it and re-serves at 540.25; looks like a drill reset, may not be a scored point."
+  },
+  {
+   "point": "P25",
+   "winner": "student",
+   "how": "student_winner",
+   "confidence": "medium",
+   "evidence": "540.25 coach serves; 541.00 student forehand attack; 541.25 ball bounces mid coach half; coach makes no attempt, paddle stays low 541.25-542.00."
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+/private/tmp/claude-501/-Users-bytedance-Desktop-code-TT-video-hight-agent/4eaa9269-4c65-4760-a92a-05382c7058da/scratchpad/repos2/TTLab/backend/app/rally_detection.py:261: UserWarning: PySoundFile failed. Trying audioread instead.
+  y, sr = librosa.load(video_path, sr=None, mono=True)
+Analysiere Video: /private/tmp/claude-501/-Users-bytedance-Desktop-code-TT-video-hight-agent/4eaa9269-4c65-4760-a92a-05382c7058da/scratchpad/input/IMG_6921_a0.mov
+Motion-Phase: 28.7s (16529 Frames)
+Audio-Phase: 34.7s (parallel zur Bildanalyse)
+Bounce-Filter: 2 Ballwechsel gekürzt, 0 Kandidaten verworfen (Ball wurde nur gehalten/geworfen).
+Ball-Validierung: 0.0s
+40 Rallys erkannt (17 Highlights). Gesamt: 34.7s
+done 40 rallies in 34.7s
+real 37.21
+user 309.86
+sys 7.22

@@ -1,0 +1,82 @@
+{
+  "annotator": "A",
+  "points": [
+    {
+      "point": "P01",
+      "winner": "student",
+      "how": "student_winner",
+      "confidence": "medium",
+      "evidence": "9.75 student forehand; 10.00 ball bounces on coach's half near the net (left side); coach makes no attempt, 10.50-10.75 both relax."
+    },
+    {
+      "point": "P02",
+      "winner": "student",
+      "how": "coach_error",
+      "confidence": "low",
+      "evidence": "17.25 student forehand; 17.75 coach blocks; 18.00 student in ready stance, no stroke; 18.25 student stands up. Ball after the coach's block not visible, likely into net (coach does not turn to fetch)."
+    },
+    {
+      "point": "P03",
+      "winner": "student",
+      "how": "coach_error",
+      "confidence": "low",
+      "evidence": "23.75 student serves; 24.25 coach backhand receive at the table; 24.50 coach leans over table, student never strokes again; 24.75 student relaxes. Fate of the receive not visible (likely net); convention: failed return with unseen fate = coach_error."
+    },
+    {
+      "point": "P04",
+      "winner": "student",
+      "how": "coach_error",
+      "confidence": "low",
+      "evidence": "31.75 student forehand; 32.00 ball bounces mid coach half; 32.25 coach forehand at table end; 32.50 student ready but no stroke, 32.75 both stand up. Fate of coach's return not visible; convention: failed return with unseen fate = coach_error."
+    },
+    {
+      "point": "P05",
+      "winner": "coach",
+      "how": "student_error",
+      "confidence": "medium",
+      "evidence": "39.00 coach hits; 39.25-39.50 student backhand pops ball up; 39.75 ball at net top, 40.00-40.25 ball seen behind the net mesh on student's side; 41.75 student scoops ball off his side of table."
+    },
+    {
+      "point": "P06",
+      "winner": "unclear",
+      "how": "unclear",
+      "confidence": "low",
+      "evidence": "48.50 student lunges for a short ball; 48.75 his return floats high toward coach; 49.00 coach hunches forward at table, ball not visible; neither plays again. Cannot tell if ball was out/net or coach failed."
+    },
+    {
+      "point": "P07",
+      "winner": "coach",
+      "how": "student_error",
+      "confidence": "medium",
+      "evidence": "69.25-69.50 student forehand block; 69.75 ball seen through net mesh on student's side while coach is still in backswing; 70.25-71.75 ball stays at net on student's side and student picks it up."
+    },
+    {
+      "point": "P08",
+      "winner": "student",
+      "how": "student_winner",
+      "confidence": "medium",
+      "evidence": "79.00 student forehand; 79.25 ball bounces on right of coach's half; 79.50 coach swings forehand at table end while blurred ball is already dropping to the floor below the table end; 79.75 coach stands. Convention: ball seen passing the coach = student_winner."
+    },
+    {
+      "point": "P09",
+      "winner": "student",
+      "how": "coach_error",
+      "confidence": "low",
+      "evidence": "85.50-85.75 student forehand; 86.00 coach blocks; 86.25 ball near left end of net at net height, student stands up and never strokes; 87.25 coach takes new ball from box. Exact fate (net/wide) not seen."
+    },
+    {
+      "point": "P10",
+      "winner": "student",
+      "how": "coach_error",
+      "confidence": "low",
+      "evidence": "Long rally; 107.00 student forehand over the net; 107.25 coach's block hand at table end; 107.50 student ready, never strokes; 107.75 both relax. Ball fate not visible (a floor ball between coach's legs at 107.25 could be a stray)."
+    },
+    {
+      "point": "P11",
+      "winner": "student",
+      "how": "student_winner",
+      "confidence": "high",
+      "evidence": "115.25 student short receive; 115.75 ball bounces on coach's half near net by right sideline as coach reaches; 116.00 ball drops off the right side under coach's paddle; 116.50 coach turns away. Convention: ball seen passing the coach = student_winner."
+    }
+  ]
+}
